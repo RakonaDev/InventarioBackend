@@ -49,7 +49,7 @@ class RolesController extends Controller
 
     $roledata = $valitatedData->getData();
     $rol->nombre = $roledata['nombre'];
-    Roles::update($rol);
+    $rol->save();
   }
 
 }
