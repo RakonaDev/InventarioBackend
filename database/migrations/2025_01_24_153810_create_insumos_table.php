@@ -17,8 +17,10 @@ return new class extends Migration
       $table->string('imagen');
       $table->string('descripcion');
       $table->double('precio');
-      $table->foreign('id_tipo_consumo')->references('id')->on('tipo_consumo');
-      $table->foreign('id_categoria')->references('id')->on('categoria');
+      $table->unsignedBigInteger('id_tipo_consumo');
+      $table->foreign('id_tipo_consumo')->references('id')->on('tipo_insumo')->onDelete('cascade');
+      $table->unsignedBigInteger('id_categoria');
+      $table->foreign('id_categoria')->references('id')->on('categoria')->onDelete('cascade');
       $table->integer('vida_util_dias');
       $table->timestamps();
     });

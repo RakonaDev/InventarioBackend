@@ -24,10 +24,11 @@ class RolesController extends Controller
     ]);
 
     if ($valitatedData->fails()) {
-      return redirect()->back()->withErrors($valitatedData->errors());
+      return $valitatedData->errors();
     }
-
-    $result = Roles::create($valitatedData->getData());
+    $result = Roles::create([
+      'name' => $request->input('nombre')
+    ]);
     return $result;
   }
 
