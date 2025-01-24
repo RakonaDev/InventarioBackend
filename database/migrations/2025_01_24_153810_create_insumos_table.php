@@ -14,13 +14,15 @@ return new class extends Migration
     Schema::create('insumos', function (Blueprint $table) {
       $table->id('id');
       $table->string('nombre');
-      $table->string('imagen');
       $table->string('descripcion');
       $table->double('precio');
+
       $table->unsignedBigInteger('id_tipo_consumo');
       $table->foreign('id_tipo_consumo')->references('id')->on('tipo_insumo')->onDelete('cascade');
+
       $table->unsignedBigInteger('id_categoria');
       $table->foreign('id_categoria')->references('id')->on('categoria')->onDelete('cascade');
+      
       $table->integer('vida_util_dias');
       $table->timestamps();
     });

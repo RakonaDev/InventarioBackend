@@ -10,7 +10,6 @@ class Insumo extends Model
 
   protected $fillable = [
     'nombre',
-    'imagen',
     'descripcion',
     'precio',
     'vida_util_dias'
@@ -19,4 +18,9 @@ class Insumo extends Model
   protected $hidden = [
     
   ];
+
+  public function imagenes()
+    {
+        return $this->hasMany(ImagenInsumos::class, 'id_insumo');
+    }
 }
