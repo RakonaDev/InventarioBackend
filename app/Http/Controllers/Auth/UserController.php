@@ -34,23 +34,27 @@ class UserController extends Controller
       $token,
       60 * 24,
       '/',
-      null,
-      true,
+      'http://localhost:3000',
+      false,
       true,
       false,
-      'Strict'
+      null
     );
     return response()->json([
-      'user' => $user
-    ])->withCookie($cookie);
+      'user' => $user,
+      'token' => $token
+    ])->cookie($cookie);
   }
 
   public function register (Request $request) {
     $valitatedData = Validator::make($request->all(), [
       'names' => 'required|string|max:255',
       'last_names' => 'required|string|max:255',
+      'age' => 'required|integer',
+      'dni' => 'required|string|max:255|unique:users',
       'email' => 'required|string|email|max:255|unique:users',
       'password' => 'required|string|min:8|max:15|confirmed',
+      'id_estado' => 'required|exists:estado,id',
       'id_roles' => 'required|exists:roles,id'
     ]);
 
@@ -59,10 +63,14 @@ class UserController extends Controller
     }
 
     $user = User::create([
-      'name' => $request->name,
-      'email' => $request->email,
-      'id_roles' => $request->id_roles,
-      'password' => Hash::make($request->password)
+      'names' => $request->input('names'),
+      'email' => $request->input('email'),
+      'age' => $request->input('age'),
+      'dni' => $request->input('dni'),
+      'last_names' => $request->input('last_names'),
+      'id_estado' => $request->input('id_estado'),
+      'id_roles' => $request->input('id_roles'),
+      'password' => Hash::make($request->input('password'))
     ]);
 
     $token = JWTAuth::fromUser($user);
@@ -72,11 +80,11 @@ class UserController extends Controller
       $token,
       60 * 24,
       '/',
-      null,
-      true,
+      'http://localhost:3000',
+      false,
       true,
       false,
-      'Strict'
+      null
     );
 
     return response()->json([

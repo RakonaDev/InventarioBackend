@@ -31,7 +31,7 @@ class EstadoController extends Controller
       return $valitatedData->errors();
     }
     $result = Estado::create([
-      'name' => $request->input('nombre')
+      'nombre' => $request->input('nombre')
     ]);
     return $result;
   }

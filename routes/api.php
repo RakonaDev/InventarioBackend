@@ -9,11 +9,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [UserController::class, 'login']);
+Route::post('/register', [UserController::class, 'register']);
+Route::post('/roles', [RolesController::class, 'create']);
+Route::post('/estado', [EstadoController::class, 'create']);
 
 Route::group(['middleware' => CheckAdmin::class], function () {
-  Route::post('/register', [UserController::class, 'register']);
-
-  Route::post('/roles', [RolesController::class, 'create']);
 
   // Ruta de Insumos
   Route::post('/insumos', action:[InsumoController::class, 'create']);
@@ -22,7 +22,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   Route::patch('/insumos/{id}', [InsumoController::class, 'update']);
   Route::get('/insumos/{limit}/{page}', [InsumoController::class, 'show']);
 
-  Route::post('/estado', [EstadoController::class, 'create']);
+  // Route::post('/estado', [EstadoController::class, 'create']);
   Route::delete('/estado/{id}', [EstadoController::class, 'destroy']);
   Route::patch('/estado/{id}', [EstadoController::class, 'updateData']);
   Route::get('/estado/{limit}/{page}', [EstadoController::class, 'show']);
