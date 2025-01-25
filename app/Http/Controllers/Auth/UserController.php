@@ -29,15 +29,26 @@ class UserController extends Controller
     }
     
     $user = Auth::user();
+    $cookie = cookie(
+      'jwt_token',
+      $token,
+      60 * 24,
+      '/',
+      null,
+      true,
+      true,
+      false,
+      'Strict'
+    );
     return response()->json([
-      'token' => $token,
       'user' => $user
-    ]);
+    ])->withCookie($cookie);
   }
 
   public function register (Request $request) {
     $valitatedData = Validator::make($request->all(), [
-      'name' => 'required|string|max:255',
+      'names' => 'required|string|max:255',
+      'last_names' => 'required|string|max:255',
       'email' => 'required|string|email|max:255|unique:users',
       'password' => 'required|string|min:8|max:15|confirmed',
       'id_roles' => 'required|exists:roles,id'
@@ -56,10 +67,21 @@ class UserController extends Controller
 
     $token = JWTAuth::fromUser($user);
 
+    $cookie = cookie(
+      'jwt_token',
+      $token,
+      60 * 24,
+      '/',
+      null,
+      true,
+      true,
+      false,
+      'Strict'
+    );
+
     return response()->json([
       'message' => 'Usuario registrado correctamente',
-      'token' => $token,
       'user' => $user->load('roles')
-    ]);
+    ])->withCookie($cookie);
   }
 }
