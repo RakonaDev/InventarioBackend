@@ -12,15 +12,20 @@ class Insumo extends Model
     'nombre',
     'descripcion',
     'precio',
+    'id_categoria',
+    'id_proveedor',
+    'id_tipo_insumo',
     'vida_util_dias'
   ];
 
-  protected $hidden = [
-    
-  ];
+  protected $hidden = [];
 
   public function imagenes()
-    {
-        return $this->hasMany(ImagenInsumos::class, 'id_insumo');
-    }
+  {
+    return $this->hasMany(ImagenInsumos::class, 'id_insumo');
+  }
+
+  public function categorias() {
+    return $this->belongsTo(Categoria::class,'id_categoria');
+  }
 }

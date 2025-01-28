@@ -20,37 +20,57 @@ class RolesController extends Controller
 
   public function create (Request $request) {
     $valitatedData = Validator::make($request->all(), [
-      'nombre' => 'required|string|max:255',
+      'name' => 'required|string|max:255',
     ]);
 
     if ($valitatedData->fails()) {
       return $valitatedData->errors();
     }
     $result = Roles::create([
-      'name' => $request->input('nombre')
+      'name' => $request->input('name')
     ]);
-    return $result;
+    return response()->json([
+      'message' => 'Rol registrado correctamente',
+      'roles' => $result
+    ]);
   }
 
-  public function updateData (Request $request, $id) {
+  public function updateData (Request $request) {
     $valitatedData = Validator::make($request->all(), [
-      'nombre' => 'required|string|max:255',
+      'name' => 'required|string|max:255',
+      'id' => 'required|integer|exists:roles,id'
     ]);
     
     if ($valitatedData->fails()) {
       return response()->json(['error' => $valitatedData->errors()], 400);
     }
-    
-    $rol = Roles::find($id);
-    if ($rol->isEmpty()) {
+
+    $roledata = $valitatedData->validated();    
+    $rol = Roles::find($roledata['id']);
+    if (!$rol) {
       return response()->json([
         'error' => 'No se encontro el rol',
       ], 404);
     }
 
-    $roledata = $valitatedData->getData();
-    $rol->nombre = $roledata['nombre'];
+    $rol->name = $roledata['name'];
     $rol->save();
+
+    return response()->json([
+      'roles' => $rol
+    ], 200);
   }
 
+  public function delete(Request $request) {
+    $valitatedData = Validator::make($request->all(), [
+      'id' => 'required|integer|exists:roles,id'
+    ]);
+    if ($valitatedData->fails()) {
+      return $valitatedData->errors();
+    }
+    $data = $valitatedData->validated();
+    $roles = Roles::find($data['id']);
+    Roles::destroy($data['id']);
+    return response()->json(['message'=> 'Usuario Eliminado','roles'=> $roles], 200);
+  }
 }

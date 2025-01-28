@@ -21,7 +21,10 @@ return new class extends Migration
       $table->foreign('id_tipo_consumo')->references('id')->on('tipo_insumo')->onDelete('cascade');
 
       $table->unsignedBigInteger('id_categoria');
-      $table->foreign('id_categoria')->references('id')->on('categoria')->onDelete('cascade');
+      $table->foreign('id_categoria')->references('id')->on('categorias')->onDelete('cascade');
+
+      $table->unsignedBigInteger('id_proveedor');
+      $table->foreign('id_proveedor')->references('id')->on('proveedores')->onDelete('cascade');
       
       $table->integer('vida_util_dias');
       $table->timestamps();
