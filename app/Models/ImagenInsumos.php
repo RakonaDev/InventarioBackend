@@ -11,7 +11,7 @@ class ImagenInsumos extends Model
   protected $fillable = ['id_insumo', 'url'];
 
   public function producto()
-    {
-        return $this->belongsTo(Insumo::class, 'id_insumo');
-    }
+  {
+    return $this->belongsTo(Insumo::class, 'id_insumo');
+  }
 }

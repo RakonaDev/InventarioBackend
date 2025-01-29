@@ -36,7 +36,7 @@ class CheckAdmin
       $request->merge(['auth_user' => $user]);
     } catch (Exception $e) {
       if ($e instanceof TokenInvalidException) {
-        return response()->json(['message' => 'Token inváaido'], 401);
+        return response()->json(['message' => 'Token inválido'], 401);
       } elseif ($e instanceof TokenExpiredException) {
         return response()->json(['message' => 'Token expirado'], 401);
       } else {
