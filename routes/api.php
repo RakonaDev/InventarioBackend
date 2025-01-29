@@ -14,8 +14,9 @@ Route::post('/roles', [RolesController::class, 'create']);
 Route::post('/estado', [EstadoController::class, 'create']);
 
 Route::group(['middleware' => CheckAdmin::class], function () {
-
+  Route::get('/getUsers', [UserController::class, 'index']);
   // Ruta de Insumos
+  Route::get('/getInsumos', [InsumoController::class, 'index']); 
   Route::post('/insumos', action:[InsumoController::class, 'create']);
   Route::delete('/insumos/{id}', [InsumoController::class, 'destroy']);
   Route::get('/insumos/{id}', [InsumoController::class, 'showByID']);

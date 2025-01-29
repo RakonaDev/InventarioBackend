@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -27,23 +28,32 @@ class UserController extends Controller
     if (!$token = JWTAuth::attempt($valitatedData->getData())) {
       return response()->json(['error' => 'Credenciales inválidas'], 401);
     }
-    
+    // prueba@administrador.com
     $user = Auth::user();
     $cookie = cookie(
       'jwt_token',
       $token,
       60 * 24,
       '/',
-      'http://localhost:3000',
-      false,
+      null,
       true,
       false,
-      null
+      true,
+      'None'
     );
+    /*
+    '/',
+      "localhost",
+      true,
+      true,
+      false,
+      'None'
+    
+    */
     return response()->json([
       'user' => $user,
       'token' => $token
-    ])->cookie($cookie);
+    ])->withCookie($cookie);
   }
 
   public function register (Request $request) {
@@ -81,15 +91,19 @@ class UserController extends Controller
       60 * 24,
       '/',
       'http://localhost:3000',
-      false,
+      true,
       true,
       false,
-      null
+      'None'
     );
 
     return response()->json([
       'message' => 'Usuario registrado correctamente',
       'user' => $user->load('roles')
-    ])->withCookie($cookie);
+    ])->cookie($cookie);
+  }
+
+  public function index () {
+    return User::all();
   }
 }
