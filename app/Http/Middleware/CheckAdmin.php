@@ -20,10 +20,10 @@ class CheckAdmin
   public function handle(Request $request, Closure $next): Response
   {
     try {
-      /*
+  
       $token = $request->cookie('jwt_token');
-      */
-      $token = $request->header('Authorization');
+      
+      /* $token = $request->header('Authorization'); */
       if(!$token) {
         return response()->json(['error' => 'Token no encontrado'], 401);
       }

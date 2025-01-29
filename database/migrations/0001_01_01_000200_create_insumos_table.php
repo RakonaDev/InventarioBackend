@@ -17,8 +17,8 @@ return new class extends Migration
       $table->string('descripcion');
       $table->double('precio');
 
-      $table->unsignedBigInteger('id_tipo_consumo');
-      $table->foreign('id_tipo_consumo')->references('id')->on('tipo_insumo')->onDelete('cascade');
+      $table->unsignedBigInteger('id_tipo_insumo');
+      $table->foreign('id_tipo_insumo')->references('id')->on('tipo_insumo')->onDelete('cascade');
 
       $table->unsignedBigInteger('id_categoria');
       $table->foreign('id_categoria')->references('id')->on('categorias')->onDelete('cascade');

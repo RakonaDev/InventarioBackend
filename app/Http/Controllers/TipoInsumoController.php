@@ -28,7 +28,7 @@ class TipoInsumoController extends Controller
 
     $tipoInsumo = TipoInsumo::create($validator->validated());
 
-    return response()->json(['message' => 'Tipo de insumo creado con éxito', 'data' => $tipoInsumo], 201);
+    return response()->json(['message' => 'Tipo de insumo creado con éxito', 'tipo_insumo' => $tipoInsumo], 201);
   }
 
   // Show: Display the specified resource
@@ -62,7 +62,7 @@ class TipoInsumoController extends Controller
 
     $tipoInsumo->update($validator->validated());
 
-    return response()->json(['message' => 'Tipo de insumo actualizado con éxito', 'data' => $tipoInsumo]);
+    return response()->json(['message' => 'Tipo de insumo actualizado con éxito', 'tipo_insumo' => $tipoInsumo]);
   }
 
   // Destroy: Remove the specified resource from storage
@@ -76,6 +76,6 @@ class TipoInsumoController extends Controller
 
     $tipoInsumo->delete();
 
-    return response()->json(['message' => 'Tipo de insumo eliminado con éxito']);
+    return response()->json(['message' => 'Tipo de insumo eliminado con éxito', 'tipo_insumo' => $tipoInsumo]);
   }
 }

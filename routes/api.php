@@ -1,13 +1,13 @@
 <?php
 
 use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\EstadoController;
 use App\Http\Controllers\InsumoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\RolesController;
+use App\Http\Controllers\TipoInsumoController;
 use App\Http\Middleware\CheckAdmin;
-use App\Models\Roles;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [UserController::class, 'login']);
@@ -40,4 +40,9 @@ Route::group(['middleware' => CheckAdmin::class], function () {
 
   // Proveedores
   Route::apiResource('proveedores', ProveedorController::class);
+
+  // Tipo Insumo
+  Route::apiResource('tipo-insumo', TipoInsumoController::class);
+
+  Route::apiResource('categorias', CategoriaController::class);
 });

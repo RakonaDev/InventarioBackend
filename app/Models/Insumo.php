@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Insumo extends Model
 {
+  protected $table = 'insumos';
   protected $primaryKey = 'id';
 
   protected $fillable = [
@@ -14,7 +15,7 @@ class Insumo extends Model
     'precio',
     'id_categoria',
     'id_proveedor',
-    'id_tipo_insumo',
+    'id_tipo_consumo',
     'vida_util_dias'
   ];
 
