@@ -22,7 +22,7 @@ class ProveedorController extends Controller
       'name' => 'required|string|max:255',
       'phone' => 'required|string|max:20',
       'email' => 'required|email|unique:proveedores,email',
-      'departament' => 'required|string|max:255',
+      'ruc' => 'required|string|max:255',
       'address' => 'required|string|max:255',
     ]);
 
@@ -54,7 +54,7 @@ class ProveedorController extends Controller
       'name' => 'required|string|max:255',
       'phone' => 'required|string|max:20',
       'email' => 'required|email|unique:proveedores,email,' . $id,
-      'departament' => 'required|string|max:255',
+      'ruc' => 'required|string|max:255',
       'address' => 'required|string|max:255',
     ]);
 

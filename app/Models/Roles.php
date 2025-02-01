@@ -11,4 +11,8 @@ class Roles extends Model
   protected $fillable = [
     'name'
   ];
+
+  public function ListPaginas() {
+    return $this->belongsToMany(Paginas::class, 'permisos', 'id_rol', 'id_pagina')->withTimestamps();
+  }
 }

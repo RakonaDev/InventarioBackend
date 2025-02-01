@@ -14,7 +14,11 @@ class Proveedor extends Model
     'name',
     'phone',
     'email',
-    'departament',
+    'ruc',
     'address',
   ];
+
+  public function insumos() {
+    return $this->belongsToMany(Insumo::class, 'id_proveedor');
+  }
 }

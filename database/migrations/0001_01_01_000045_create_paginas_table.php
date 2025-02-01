@@ -11,9 +11,13 @@ return new class extends Migration
    */
   public function up(): void
   {
-    Schema::create('categorias', function (Blueprint $table) {
-      $table->id('id');
+    Schema::create('paginas', function (Blueprint $table) {
+      $table->id()->autoIncrement();
       $table->string('nombre');
+      /*
+      $table->string(column: 'icon_html');
+      $table->string('path');
+      */
       $table->timestamps();
     });
   }
@@ -23,6 +27,6 @@ return new class extends Migration
    */
   public function down(): void
   {
-    Schema::dropIfExists('categoria');
+    Schema::dropIfExists('paginas');
   }
 };

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Compra;
 use App\Models\ImagenInsumos;
 use App\Models\Insumo;
 use Illuminate\Http\Request;
@@ -13,20 +14,112 @@ class InsumoController extends Controller
   //
   public function index()
   {
-    $insumos = Insumo::with('imagenes')->get();
-    return $insumos;
+    return response()->json(Insumo::all()->load('categorias')->load('proveedor'), 200);
   }
 
-  public function show($limit, $page)
+  public function store(Request $request)
   {
-    $insumo = Insumo::with('imagenes')->paginate($limit, ['*'], 'insumos', $page);
-    return $insumo;
+    $validator = Validator::make($request->all(), [
+      'nombre' => 'required|string|max:255',
+      'descripcion' => 'required|string',
+      'precio' => 'required|numeric|min:1',
+      'cantidad' => 'required|integer|min:1',
+      'id_categoria' => 'required|exists:categorias,id',
+      'id_proveedor' => 'required|exists:proveedores,id',
+      'fecha_creacion' => 'nullable|date',
+      'fecha_vencimiento' => 'nullable|date|after_or_equal:fecha_creacion',
+      'comprobante' => 'nullable|file|mimes:pdf|max:5048'
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors(), 400);
+    }
+
+    $data = $request->all();
+
+    if ($request->hasFile('comprobante')) {
+      $path = $request->file('comprobante')->store('compras', 'public');
+      $data['comprobante'] = asset("storage/{$path}");
+    }
+
+    if (isset($data['fecha_creacion']) && isset($data['fecha_vencimiento'])) {
+      $data['vida_util_dias'] = now()->parse($data['fecha_creacion'])->diffInDays($data['fecha_vencimiento']);
+    }
+
+    $insumo = Insumo::create($data);
+
+    $compra = Compra::create([
+      'cantidad' => $insumo->cantidad,
+      'comprobante' => $data['comprobante'] ?? null,
+      'total' => $insumo->precio * $insumo->cantidad,
+      'id_producto' => $insumo->id,
+      'fecha_ingreso' => $data['fecha_creacion'] ?? null,
+      'fecha_vencimiento' => $data['fecha_vencimiento'] ?? null,
+      'vida_utiles_dias' => $data['vida_util_dias'] ?? null,
+    ]);
+
+    return response()->json([
+      'message' => 'Insumo y compra registrados correctamente',
+      'insumos' => $insumo->load('categorias')->load('proveedor'),
+      'compras' => $compra->load('producto')
+    ], 201);
   }
 
-  public function showByID($id)
+  public function show($id)
   {
-    $insumo = Insumo::with('imagenes')->findOrFail($id);
-    return response()->json($insumo);
+    $insumo = Insumo::find($id);
+    if (!$insumo) {
+      return response()->json(['message' => 'Insumo no encontrado'], 404);
+    }
+    return response()->json($insumo, 200);
+  }
+
+  public function update(Request $request, $id)
+  {
+    $insumo = Insumo::find($id);
+    if (!$insumo) {
+      return response()->json(['message' => 'Insumo no encontrado'], 404);
+    }
+
+    $validator = Validator::make($request->all(), [
+      'nombre' => 'sometimes|string|max:255',
+      'descripcion' => 'sometimes|string',
+      'precio' => 'sometimes|numeric|min:1',
+      'cantidad' => 'sometimes|integer|min:1',
+      'id_categoria' => 'sometimes|exists:categorias,id',
+      'id_proveedor' => 'sometimes|exists:proveedores,id',
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors(), 400);
+    }
+
+    $insumo->update($validator->validated());
+
+    return response()->json([
+      'message' => 'Insumo actualizado correctamente', 
+      'insumos' => $insumo->load('categorias')->load('proveedor'),
+    ],200);
+  }
+
+  public function destroy($id)
+  {
+    $insumo = Insumo::find($id);
+    if (!$insumo) {
+      return response()->json(['message' => 'Insumo no encontrado'], 404);
+    }
+    $compra = Compra::where('id_producto', $insumo->id)->first();
+
+    // Si existe una compra y tiene un comprobante, eliminar el archivo
+    if ($compra && !empty($compra->comprobante)) {
+      // Eliminar el archivo solo si existe y tiene una ruta válida
+      if (Storage::exists($compra->comprobante)) {
+        Storage::delete($compra->comprobante);
+      }
+    }
+    $insumo->delete();
+
+    return response()->json(['message' => 'Insumo eliminado correctamente', 'insumos' => $insumo, 'compras' => $compra], 200);
   }
 
   public function create(Request $request)
@@ -90,7 +183,7 @@ class InsumoController extends Controller
       'producto' => $result->load('imagenes'), // Retornar el producto con sus imágenes
     ], 201);
   }
-
+  /*
   public function update(Request $request, $id)
   {
     $validatedData = $request->validate([
@@ -137,5 +230,5 @@ class InsumoController extends Controller
     $producto->delete();
 
     return response()->json(['message' => 'Insumo eliminado exitosamente']);
-  }
+  } */
 }

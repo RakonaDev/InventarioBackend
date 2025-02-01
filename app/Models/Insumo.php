@@ -13,10 +13,9 @@ class Insumo extends Model
     'nombre',
     'descripcion',
     'precio',
+    'cantidad',
     'id_categoria',
     'id_proveedor',
-    'id_tipo_consumo',
-    'vida_util_dias'
   ];
 
   protected $hidden = [];
@@ -28,5 +27,9 @@ class Insumo extends Model
 
   public function categorias() {
     return $this->belongsTo(Categoria::class,'id_categoria');
+  }
+
+  public function proveedor() {
+    return $this->belongsTo(Proveedor::class,'id_proveedor');
   }
 }

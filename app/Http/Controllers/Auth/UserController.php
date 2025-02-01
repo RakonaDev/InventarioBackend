@@ -109,11 +109,6 @@ class UserController extends Controller
       'user' => $user->load('roles')
     ])->cookie($cookie);
   }
-  
-  public function me(Request $request)
-  {
-    $token = $request->cookie();
-  }
 
   public function update(Request $request)
   {
@@ -122,9 +117,9 @@ class UserController extends Controller
       'names' => 'nullable|string|max:255',
       'last_names' => 'nullable|string|max:255',
       'age' => 'nullable|integer',
-      'tel' => 'nullable|max:10|string|unique:users,tel,'. $request->id,
-      'dni' => 'nullable|string|max:255|unique:users,dni,'. $request->id,
-      'email' => 'nullable|string|email|max:255|unique:users,email,'. $request->id,
+      'tel' => 'nullable|max:10|string|unique:users,tel,' . $request->id,
+      'dni' => 'nullable|string|max:255|unique:users,dni,' . $request->id,
+      'email' => 'nullable|string|email|max:255|unique:users,email,' . $request->id,
       'password' => 'nullable|string|min:8|max:15',
       'id_estado' => 'nullable|exists:estado,id',
       'id_roles' => 'nullable|exists:roles,id'
@@ -162,7 +157,8 @@ class UserController extends Controller
     return $users;
   }
 
-  public function delete(Request $request) {
+  public function delete(Request $request)
+  {
     $valitatedData = Validator::make($request->all(), [
       'id' => 'required|integer|exists:users,id'
     ]);
@@ -172,6 +168,19 @@ class UserController extends Controller
     $data = $valitatedData->validated();
     $user = User::find($data['id']);
     User::destroy($data['id']);
-    return response()->json(['message'=> 'Usuario Eliminado','user'=> $user], 200);
+    return response()->json(['message' => 'Usuario Eliminado', 'user' => $user], 200);
+  }
+
+  public function me()
+  {
+    $usuario = JWTAuth::parseToken()->authenticate();
+
+    if (!$usuario) {
+      return response()->json(['message' => 'No autenticado'], 401);
+    }
+
+    $usuario->load('roles.ListPaginas'); // Cargar el rol y sus páginas permitidas
+
+    return response()->json($usuario);
   }
 }

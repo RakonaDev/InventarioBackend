@@ -19,6 +19,7 @@ class CategoriaController extends Controller
   {
     $validator = Validator::make($request->all(), [
       'nombre' => 'required|string|max:255',
+      'descripcion' => 'required|string|max:255'
     ]);
 
     if ($validator->fails()) {
@@ -46,7 +47,8 @@ class CategoriaController extends Controller
   public function update(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [
-      'nombre' => 'required|string|max:255'
+      'nombre' => 'required|string|max:255',
+      'descripcion' => 'required|string|max:255'
     ]);
 
     if ($validator->fails()) {
