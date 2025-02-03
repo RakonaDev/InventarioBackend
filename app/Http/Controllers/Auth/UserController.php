@@ -34,7 +34,7 @@ class UserController extends Controller
       $token,
       60 * 24,
       '/',
-      'http://localhost:3000',
+      null,
       false,
       true,
       false,
