@@ -1,0 +1,33 @@
+{
+  "names": "Prueba",
+  "last_names": "111",
+  "age": 30,
+  "tel": "111111111",
+  "dni": "1111111",
+  "email": "prueba@administrador.com",
+  "password": "12345678",
+  "id_estado": 1,
+  "id_roles": 1
+}
+
+{
+  "nombre": "Activo"
+}
+
+{
+  "name": "Administrador"
+}
+
+{
+  "name": "Administrador",
+  "paginas": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ]
+}

@@ -16,14 +16,15 @@ return new class extends Migration
             $table->string('names');
             $table->string('last_names');
             $table->integer('age');
+            $table->string('tel');
             $table->string('dni')->unique();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->unsignedBigInteger('id_roles');
-            $table->foreign(columns: 'id_roles')->references('id')->on('roles');
+            $table->foreign(columns: 'id_roles')->references('id')->on('roles')->onDelete('cascade');
             $table->unsignedBigInteger('id_estado');
-            $table->foreign('id_estado')->references('id')->on('estado');
+            $table->foreign('id_estado')->references('id')->on('estado')->onDelete('cascade');
             $table->rememberToken();
             $table->timestamps();
         });
