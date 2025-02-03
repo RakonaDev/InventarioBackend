@@ -19,6 +19,10 @@ class InsumoController extends Controller
 
   public function store(Request $request)
   {
+    $request->merge([
+      'fecha_creacion' => $request->filled('fecha_creacion') ? $request->fecha_creacion : null,
+      'fecha_vencimiento' => $request->filled('fecha_vencimiento') ? $request->fecha_vencimiento : null,
+    ]);
     $validator = Validator::make($request->all(), [
       'nombre' => 'required|string|max:255',
       'descripcion' => 'required|string',
@@ -26,8 +30,25 @@ class InsumoController extends Controller
       'cantidad' => 'required|integer|min:1',
       'id_categoria' => 'required|exists:categorias,id',
       'id_proveedor' => 'required|exists:proveedores,id',
-      'fecha_creacion' => 'nullable|date',
-      'fecha_vencimiento' => 'nullable|date|after_or_equal:fecha_creacion',
+      'fecha_creacion' => [
+        'nullable',
+        'date',
+        function ($attribute, $value, $fail) {
+          if (!empty($value) && !strtotime($value)) {
+            $fail("El campo $attribute debe ser una fecha valida.");
+          }
+        }
+      ],
+      'fecha_vencimiento' => [
+        'nullable',
+        'date',
+        'after_or_equal:fecha_creacion',
+        function ($attribute, $value, $fail) {
+          if (!empty($value) && !strtotime($value)) {
+            $fail("El campo $attribute debe ser una fecha valida.");
+          }
+        }
+      ],
       'comprobante' => 'nullable|file|mimes:pdf|max:5048'
     ]);
 
@@ -97,9 +118,9 @@ class InsumoController extends Controller
     $insumo->update($validator->validated());
 
     return response()->json([
-      'message' => 'Insumo actualizado correctamente', 
+      'message' => 'Insumo actualizado correctamente',
       'insumos' => $insumo->load('categorias')->load('proveedor'),
-    ],200);
+    ], 200);
   }
 
   public function destroy($id)

@@ -16,12 +16,34 @@ class ComprasController extends Controller
     return Compra::all()->load('producto');
   }
 
-  public function store(Request $request) {
+  public function store(Request $request)
+  {
+    $request->merge([
+      'fecha_creacion' => $request->filled('fecha_creacion') ? $request->fecha_creacion : null,
+      'fecha_vencimiento' => $request->filled('fecha_vencimiento') ? $request->fecha_vencimiento : null,
+    ]);
     $validator = Validator::make($request->all(), [
       'cantidad' => 'required|integer|min:1',
       'id_producto' => 'required|exists:insumos,id',
-      'fecha_creacion' => 'nullable|date',
-      'fecha_vencimiento' => 'nullable|date|after_or_equal:fecha_creacion',
+      'fecha_creacion' => [
+        'nullable',
+        'date',
+        function ($attribute, $value, $fail) {
+          if (!empty($value) && !strtotime($value)) {
+            $fail("El campo $attribute debe ser una fecha valida.");
+          }
+        }
+      ],
+      'fecha_vencimiento' => [
+        'nullable',
+        'date',
+        'after_or_equal:fecha_creacion',
+        function ($attribute, $value, $fail) {
+          if (!empty($value) && !strtotime($value)) {
+            $fail("El campo $attribute debe ser una fecha valida.");
+          }
+        }
+      ],
       'comprobante' => 'nullable|file|mimes:pdf|max:5048'
     ]);
 
@@ -50,9 +72,9 @@ class ComprasController extends Controller
       'fecha_vencimiento' => $data['fecha_vencimiento'] ?? null,
       'vida_utiles_dias' => $data['vida_util_dias'] ?? null,
     ]);
-  
+
     $producto->increment('cantidad', $data['cantidad']);
-    
+
     return response()->json([
       'message' => 'Compra creada exitosamente',
       'compras' => $compra->load('producto'),

@@ -36,20 +36,11 @@ class UserController extends Controller
       $token,
       60 * 24,
       '/',
-      'http://localhost:3000',
+      null,
       false,
       true,
       'None'
     );
-    /*
-    '/',
-      "localhost",
-      true,
-      true,
-      false,
-      'None'
-    
-    */
     return response()->json([
       'user' => $user,
       'token' => $token
@@ -89,24 +80,10 @@ class UserController extends Controller
     ]);
     $user->password = $request->input('password');
 
-    $token = JWTAuth::fromUser($user);
-
-    $cookie = cookie(
-      'jwt_token',
-      $token,
-      60 * 24,
-      '/',
-      'http://localhost:3000',
-      true,
-      true,
-      false,
-      'None'
-    );
-
     return response()->json([
       'message' => 'Usuario registrado correctamente',
       'user' => $user->load('roles')
-    ])->cookie($cookie);
+    ]);
   }
 
   public function update(Request $request)
@@ -181,5 +158,31 @@ class UserController extends Controller
     $usuario->load('roles.ListPaginas'); // Cargar el rol y sus páginas permitidas
 
     return response()->json($usuario);
+  }
+  public function logout()
+  {
+    $cookie = cookie(
+      'jwt_token',
+      '',
+      0,
+      '/',
+      null,
+      false,
+      true,
+      'None'
+    );
+
+    try {
+      JWTAuth::invalidate(JWTAuth::getToken());
+
+      return response()->json([
+        'message' => 'Sesión cerrada correctamente'
+      ], 200)->withCookie($cookie);
+    } catch (\Exception $e) {
+      return response()->json([
+        'error' => 'No se pudo cerrar la sesión',
+        'message' => $e->getMessage()
+      ], 500);
+    }
   }
 }

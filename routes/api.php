@@ -20,6 +20,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   Route::post('/register', [UserController::class, 'register']);
   Route::get('/me', [UserController::class, 'me']);
   Route::patch('/user', [UserController::class, 'update']);
+  Route::post('/logout', [UserController::class,'logout']);
   // Ruta de Insumos
   Route::get('/getInsumos', [InsumoController::class, 'index']); 
   Route::post('/insumos', action:[InsumoController::class, 'store']);
