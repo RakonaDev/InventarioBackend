@@ -37,6 +37,7 @@ class UserController extends Controller
       60 * 24,
       '/',
       null,
+      true,
       false,
       true,
       'None'
@@ -167,9 +168,10 @@ class UserController extends Controller
       0,
       '/',
       null,
-      false,
       true,
-      'None'
+      true,
+      false,
+      'Lax'
     );
 
     try {
