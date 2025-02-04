@@ -20,6 +20,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   Route::post('/register', [UserController::class, 'register']);
   Route::get('/me', [UserController::class, 'me']);
   Route::patch('/user', [UserController::class, 'update']);
+  Route::delete('/user/{id}', [UserController::class,'delete']);
   Route::post('/logout', [UserController::class,'logout']);
   // Ruta de Insumos
   Route::get('/getInsumos', [InsumoController::class, 'index']); 
@@ -39,7 +40,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   // Roles
   Route::get('/getRoles', [RolesController::class,'index']);
   Route::post('/roles', [RolesController::class, 'create']);
-  Route::delete('/roles', [RolesController::class, 'delete']);
+  Route::delete('/roles/{id}', [RolesController::class, 'delete']);
   Route::patch('/roles', [RolesController::class,'updateData']);
 
   // Proveedores

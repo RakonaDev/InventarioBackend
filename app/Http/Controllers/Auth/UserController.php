@@ -134,8 +134,9 @@ class UserController extends Controller
     return $users;
   }
 
-  public function delete(Request $request)
+  public function delete(Request $request, $id)
   {
+    /*
     $valitatedData = Validator::make($request->all(), [
       'id' => 'required|integer|exists:users,id'
     ]);
@@ -143,8 +144,9 @@ class UserController extends Controller
       return $valitatedData->errors();
     }
     $data = $valitatedData->validated();
-    $user = User::find($data['id']);
-    User::destroy($data['id']);
+    */
+    $user = User::find($id);
+    User::destroy($id);
     return response()->json(['message' => 'Usuario Eliminado', 'user' => $user], 200);
   }
 

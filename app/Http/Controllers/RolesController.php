@@ -76,22 +76,26 @@ class RolesController extends Controller
     ], 200);
   }
 
-  public function delete(Request $request) {
+  public function delete(Request $request, $id) {
+    /*
     $valitatedData = Validator::make($request->all(), [
       'id' => 'required|integer|exists:roles,id'
     ]);
+    
     if ($valitatedData->fails()) {
       return $valitatedData->errors();
     }
+    
     $data = $valitatedData->validated();
-    $roles = Roles::find($data['id']);
+    */
+    $roles = Roles::find($id);
     if ($roles) {
       $roles->ListPaginas()->detach();
     }
     else {
       return response()->json(['message'=> 'Usuario No Existe'], 404);
     }
-    Roles::destroy($data['id']);
+    Roles::destroy($id);
     return response()->json(['message'=> 'Usuario Eliminado','roles'=> $roles], 200);
   }
 }
