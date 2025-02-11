@@ -23,7 +23,7 @@ class CategoriaController extends Controller
     ]);
 
     if ($validator->fails()) {
-      return response()->json(['errors' => $validator->errors()], 422);
+      return response()->json(['errors' => $validator->errors(), 'message' => 'Faltan Datos'], 422);
     }
 
     $categoria = Categoria::create($validator->validated());
@@ -63,7 +63,7 @@ class CategoriaController extends Controller
 
     $categoria->update($validator->validated());
 
-    return response()->json(['message' => 'Categoria actualizado con éxito', 'categorias' => $categoria]);
+    return response()->json(['message' => 'Categoria actualizado con éxito', 'categorias' => $categoria], 200);
   }
 
   // Destroy: Remove the specified resource from storage
@@ -77,6 +77,6 @@ class CategoriaController extends Controller
 
     $categoria->delete();
 
-    return response()->json(['message' => 'Categoria eliminado con éxito', 'categorias' => $categoria]);
+    return response()->json(['message' => 'Categoria eliminado con éxito', 'categorias' => $categoria], 200);
   }
 }

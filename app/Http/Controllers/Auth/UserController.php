@@ -23,11 +23,11 @@ class UserController extends Controller
     ]);
 
     if ($valitatedData->fails()) {
-      return $valitatedData->errors();
+      return reponse()->json(['message' => $validatedData->errors()]);
     }
 
     if (!$token = JWTAuth::attempt($valitatedData->getData())) {
-      return response()->json(['error' => 'Credenciales inválidas'], 401);
+      return response()->json(['message' => 'Credenciales inválidas'], 401);
     }
     // prueba@administrador.com
     $user = Auth::user();
@@ -44,7 +44,8 @@ class UserController extends Controller
     );
     return response()->json([
       'user' => $user,
-      'token' => $token
+      'token' => $token,
+      'message' => 'Iniciado Correctamente'
     ])->withCookie($cookie);
   }
 
@@ -84,7 +85,7 @@ class UserController extends Controller
     return response()->json([
       'message' => 'Usuario registrado correctamente',
       'user' => $user->load('roles')
-    ]);
+    ], 200);
   }
 
   public function update(Request $request)
@@ -125,7 +126,7 @@ class UserController extends Controller
     $user->id_roles = $data['id_roles'] ?? $user->id_roles;
     $user->save();
 
-    return response()->json(['message' => 'Usuario actualizado exitosamente', 'user' => $user], 200);
+    return response()->json(['message' => 'Usuario actualizado exitosamente', 'user' => $user->load('roles')->load('estado')], 200);
   }
 
   public function index()
