@@ -14,6 +14,7 @@ use App\Http\Middleware\CheckAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [UserController::class, 'login']);
+Route::get('/insumos/{limit}/{page}', [InsumoController::class, 'paginateInsumos']);
 
 Route::group(['middleware' => CheckAdmin::class], function () {
   Route::get('/getUsers', [UserController::class, 'index']);
@@ -32,7 +33,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   // Route::patch('/insumos/{id}', [InsumoController::class, 'update']);
   Route::post('/editInsumos/{id}', [InsumoController::class, 'update']);
   Route::post('/deleteInsumos', [InsumoController::class, 'destroy']);
-  Route::get('/insumos/{limit}/{page}', [InsumoController::class, 'show']);
+  // Route::get('/insumos/{limit}/{page}', [InsumoController::class, 'paginateInsumos']);
 
   // Estado 
   Route::post('/estado', [EstadoController::class, 'create']);
@@ -60,6 +61,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   Route::apiResource('tipo-insumo', TipoInsumoController::class);
 
   //Route::apiResource('categorias', CategoriaController::class);
+  Route::get('/categorias/{limit}/{pages}', [CategoriaController::class, 'paginateCategorias']);
   Route::get('/categorias', [CategoriaController::class, 'index']);
   Route::post('/categorias', [CategoriaController::class, 'store']);
   Route::post('/categorias/{id}', [CategoriaController::class, 'update']);

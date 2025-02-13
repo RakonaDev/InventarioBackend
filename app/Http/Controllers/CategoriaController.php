@@ -79,4 +79,14 @@ class CategoriaController extends Controller
 
     return response()->json(['message' => 'Categoria eliminado con éxito', 'categorias' => $categoria], 200);
   }
+
+  public function paginateCategorias ($limit = 10, $page = 1) {
+    $categorias = Categoria::paginate($limit, ['*'], 'page', $page);
+    $response = [
+      'categorias' => $categorias->items(),
+      'currentPage' => $categorias->currentPage(),
+      'totalPages' => $categorias->lastPage()
+    ];
+    return response()->json($response, 200);
+  }
 }
