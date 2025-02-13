@@ -44,7 +44,7 @@ class RolesController extends Controller
     }
     return response()->json([
       'message' => 'Rol registrado correctamente',
-      'roles' => $result
+      'roles' => $result->load('ListPaginas')
     ]);
   }
 
