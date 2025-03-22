@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Permisos;
 use App\Models\Roles;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class RolesController extends Controller
@@ -22,13 +23,14 @@ class RolesController extends Controller
   }
 
   public function create(Request $request)
-  {
+  { 
+    
     $valitatedData = Validator::make($request->all(), [
       'name' => 'required|string|max:255|unique:roles',
       'paginas' => 'required|array',
       'paginas.*' => 'exists:paginas,id'
     ]);
-
+    
     if ($valitatedData->fails()) {
       return response()->json($valitatedData->errors(), 400);
     }
@@ -40,6 +42,7 @@ class RolesController extends Controller
     if ($request->has('paginas')) {
       $paginas = $request->input('paginas');
       foreach ($paginas as $pagina_id) {
+        Log::info($pagina_id);
         Permisos::create([
           'id_rol' => $result->id,
           'id_pagina' => $pagina_id
@@ -50,9 +53,10 @@ class RolesController extends Controller
       'message' => 'Rol registrado correctamente',
       'roles' => $result->load('ListPaginas')
     ]);
+    
   }
 
-  public function updateData(Request $request)
+  public function updateData(Request $request, $id)
   {
     $valitatedData = Validator::make($request->all(), [
       'name' => 'required|string|max:255',
@@ -98,7 +102,7 @@ class RolesController extends Controller
     if ($roles) {
       $roles->ListPaginas()->detach();
     } else {
-      return response()->json(['message' => 'Usuario No Existe'], 404);
+      return response()->json(['message' => 'Rol No Existe'], 404);
     }
     Roles::destroy($id);
     return response()->json(['message' => 'Usuario Eliminado', 'roles' => $roles], 200);
@@ -112,8 +116,9 @@ class RolesController extends Controller
         return [
           'id' => $role->id,
           'name' => $role->name,
+          'created_at' => $role->created_at,
+          'updated_at' => $role->updated_at,
           'list_paginas' => $role->ListPaginas,
-          'users' => $role->users,
         ];
       }),
       'currentPage' => $roles->currentPage(),

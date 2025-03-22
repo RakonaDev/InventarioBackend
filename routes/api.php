@@ -49,7 +49,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   //Route::delete('/roles/{id}', [RolesController::class, 'delete']);
   Route::post('/deleteRoles/{id}', [RolesController::class, 'delete']);
   // Route::patch('/roles', [RolesController::class,'updateData']);
-  Route::post('/roles', [RolesController::class, 'updateData']);
+  Route::post('/roles/{id}', [RolesController::class, 'updateData']);
   Route::get('/roles/{limit}/{page}', [RolesController::class, 'paginateRoles']);
 
   // Proveedores
