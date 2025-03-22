@@ -6,14 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
-  //
 
   public function login(Request $request)
   {
@@ -23,7 +21,7 @@ class UserController extends Controller
     ]);
 
     if ($valitatedData->fails()) {
-      return reponse()->json(['message' => $validatedData->errors()]);
+      return response()->json(['message' => $valitatedData->errors()]);
     }
 
     if (!$token = JWTAuth::attempt($valitatedData->getData())) {
@@ -36,7 +34,7 @@ class UserController extends Controller
       $token,
       60 * 24,
       '/',
-      null,
+      'localhost',
       true,
       false,
       true,
@@ -81,7 +79,7 @@ class UserController extends Controller
       'password' => Hash::make($request->input('password'))
     ]);
     $user->password = $request->input('password');
-
+    
     return response()->json([
       'message' => 'Usuario registrado correctamente',
       'user' => $user->load('roles')
@@ -189,5 +187,15 @@ class UserController extends Controller
         'message' => $e->getMessage()
       ], 500);
     }
+  }
+
+  public function paginateUsers ($limit = 10, $page = 1) {
+    $users = User::with('roles')->with('estado')->paginate($limit, ['*'], 'page', $page);
+    $response = [
+      'insumos' => $users->items(),
+      'currentPage' => $users->currentPage(),
+      'totalPages' => $users->lastPage()
+    ];
+    return response()->json($response, 200);
   }
 }

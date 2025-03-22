@@ -14,7 +14,7 @@ use App\Http\Middleware\CheckAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [UserController::class, 'login']);
-Route::get('/insumos/{limit}/{page}', [InsumoController::class, 'paginateInsumos']);
+Route::post('/register', [UserController::class, 'register']);
 
 Route::group(['middleware' => CheckAdmin::class], function () {
   Route::get('/getUsers', [UserController::class, 'index']);
@@ -24,6 +24,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   Route::post('/user', [UserController::class, 'update']);
   // Route::delete('/user/{id}', [UserController::class,'delete']);
   Route::post('/deleteUser/{id}', [UserController::class, 'delete']);
+  Route::post('/user/{limit}/{page}', [UserController::class, 'paginateUsers']);
   Route::post('/logout', [UserController::class,'logout']);
   // Ruta de Insumos
   Route::get('/getInsumos', [InsumoController::class, 'index']); 
@@ -49,6 +50,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   Route::post('/deleteRoles/{id}', [RolesController::class, 'delete']);
   // Route::patch('/roles', [RolesController::class,'updateData']);
   Route::post('/roles', [RolesController::class, 'updateData']);
+  Route::get('/roles/{limit}/{page}', [RolesController::class, 'paginateRoles']);
 
   // Proveedores
   // Route::apiResource('proveedores', ProveedorController::class);
@@ -56,7 +58,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   Route::post('/proveedores', [ProveedorController::class, 'store']);
   Route::post('/proveedores/{id}', [ProveedorController::class, 'update']);
   Route::post('/deleteProveedores/{id}', [ProveedorController::class, 'destroy']);
-
+  Route::get('/proveedores/{limit}/{page}', [ProveedorController::class, 'paginateProveedores']);
   // Tipo Insumo
   Route::apiResource('tipo-insumo', TipoInsumoController::class);
 
@@ -73,12 +75,18 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   
   Route::get('/paginas', [PaginasController::class, 'index']);
   
-  Route::apiResource('compras', ComprasController::class);
+  // Route::apiResource('compras', ComprasController::class);
+  Route::get('/compras/{limit}/{page}', [ComprasController::class, 'paginateCompras']);
+  Route::post('/compras', [ComprasController::class, 'store']);
+
   // Route::apiResource('insumos', InsumoController::class);
   Route::get('/insumos', [InsumoController::class, 'index']);
   Route::post('/insumos', [InsumoController::class, 'store']);
   Route::post('/insumos/{id}', [InsumoController::class, 'update']);
+  Route::get('/insumos/{limit}/{page}', [InsumoController::class, 'paginateInsumos']);
   Route::post('/deleteInsumos/{id}', [InsumoController::class, 'destroy']);
   
-  Route::apiResource('salidas', SalidasController::class);
+  // Route::apiResource('salidas', SalidasController::class);
+  Route::get('/salidas/{limit}/{page}', [SalidasController::class, 'paginateSalidas']);
+  Route::post('/salidas', [SalidasController::class, 'store']);
 });

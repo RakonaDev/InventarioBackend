@@ -41,4 +41,14 @@ class SalidasController extends Controller
       'insumos' => $producto
     ]);
   }
+
+  public function paginateSalidas ($limit = 10, $page = 1) {
+    $salidas = Salida::with('producto')->paginate($limit, ['*'], 'page', $page);
+    $response = [
+      'salidas' => $salidas->items(),
+      'currentPage' => $salidas->currentPage(),
+      'totalPages' => $salidas->lastPage()
+    ];
+    return response()->json($response, 200);         
+  }
 }
