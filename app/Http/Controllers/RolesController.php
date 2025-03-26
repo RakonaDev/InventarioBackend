@@ -112,25 +112,6 @@ class RolesController extends Controller
   {
     $roles = Roles::paginate($limit, ['*'], 'page', $page);
     $response = [
-      'roles' => collect($roles->items())->map(function ($role) {
-        return [
-          'id' => $role->id,
-          'name' => $role->name,
-          'created_at' => $role->created_at,
-          'updated_at' => $role->updated_at,
-          'list_paginas' => $role->ListPaginas,
-        ];
-      }),
-      'currentPage' => $roles->currentPage(),
-      'totalPages' => $roles->lastPage()
-    ];
-    return response()->json($response, 200);
-  }
-
-  public function paginateRoles($limit, $page)
-  {
-    $roles = Roles::paginate($limit, ['*'], 'page', $page);
-    $response = [
       'roles' => $roles->items(),
       'currentPage' => $roles->currentPage(),
       'totalPages' => $roles->lastPage()

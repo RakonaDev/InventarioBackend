@@ -34,12 +34,8 @@ class UserController extends Controller
       $token,
       60 * 24,
       '/',
-<<<<<<< HEAD
-      "localhost",
+      ENV("DOMAIN_COOKIE"),
       true,
-=======
-      'localhost',
->>>>>>> be96a6a522e29574debc3e88e6f8c73f5692389e
       true,
       false,
       'None'
@@ -172,11 +168,11 @@ class UserController extends Controller
       '',
       0,
       '/',
-      null,
+      ENV("DOMAIN_COOKIE"),
       true,
       true,
       false,
-      'Lax'
+      'None'
     );
 
     try {
@@ -196,7 +192,7 @@ class UserController extends Controller
   public function paginateUsers ($limit = 10, $page = 1) {
     $users = User::with('roles')->with('estado')->paginate($limit, ['*'], 'page', $page);
     $response = [
-      'insumos' => $users->items(),
+      'users' => $users->items(),
       'currentPage' => $users->currentPage(),
       'totalPages' => $users->lastPage()
     ];
