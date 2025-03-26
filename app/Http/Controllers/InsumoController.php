@@ -204,52 +204,35 @@ class InsumoController extends Controller
       'producto' => $result->load('imagenes'), // Retornar el producto con sus imágenes
     ], 201);
   }
-  /*
-  public function update(Request $request, $id)
+  public function paginateInsumos($limit = 10, $page = 1)
   {
-    $validatedData = $request->validate([
-      'nombre' => 'string|max:255',
-      'descripcion' => 'string',
-      'precio' => 'numeric|min:0',
-      'vida_util_dias' => 'integer|min:0',
-      'imagenes' => 'array|max:4',
-      'imagenes.*' => 'file|mimes:jpg,jpeg,png|max:2048',
-    ]);
-
-    $producto = Insumo::findOrFail($id);
-    $producto->update($validatedData);
-
-    if ($request->has('imagenes')) {
-      // Eliminar imágenes antiguas
-      foreach ($producto->imagenes as $imagen) {
-        Storage::delete('public/' . basename($imagen->url));
-        $imagen->delete();
-      }
-
-      // Subir imágenes nuevas
-      foreach ($request->file('imagenes') as $imagen) {
-        $path = $imagen->store('productos', 'public');
-        ImagenInsumos::create([
-          'producto_id' => $producto->id,
-          'url' => Storage::url($path),
-        ]);
-      }
-    }
-
-    return response()->json($producto->load('imagenes'));
+    $productos = Insumo::with('categorias')->with('proveedor')->paginate($limit, ['*'], 'page', $page);
+    $response = [
+      'insumos' => $productos->items(),
+      'currentPage' => $productos->currentPage(),
+      'totalPages' => $productos->lastPage()
+    ];
+    return response()->json($response, 200);
   }
 
-  public function destroy($id)
+  public function buscarInsumosPorNombrePaginado(Request $request)
   {
-    $producto = Insumo::findOrFail($id);
+    $query = $request->input('query');
+    $limit = $request->input('limit', 10); // Obtén el límite de la petición o usa 10 por defecto
+    $page = $request->input('page', 1);   // Obtén la página de la petición o usa 1 por defecto
 
-    foreach ($producto->imagenes as $imagen) {
-      Storage::delete('public/' . basename($imagen->url));
-      $imagen->delete();
-    }
+    $productos = Insumo::with('categorias')
+      ->with('proveedor')
+      ->where('nombre', 'like', '%' . $query . '%') // Asumo que la columna del nombre es 'nombre'
+      ->paginate($limit, ['*'], 'page', $page);
 
-    $producto->delete();
+    $response = [
+      'insumos' => $productos->items(),
+      'currentPage' => $productos->currentPage(),
+      'totalPages' => $productos->lastPage(),
+      'total' => $productos->total(), // Agrega el total de elementos si lo necesitas
+    ];
 
-    return response()->json(['message' => 'Insumo eliminado exitosamente']);
-  } */
+    return response()->json($response, 200);
+  }
 }

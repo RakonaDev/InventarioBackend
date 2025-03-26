@@ -86,4 +86,15 @@ class ProveedorController extends Controller
 
     return response()->json(['message' => 'Proveedor eliminado con éxito', 'proveedores' => $proveedor]);
   }
+
+  public function paginateProveedores($limit = 10, $page = 1)
+  {
+    $proveedor = Proveedor::paginate($limit, ['*'], 'page', $page);
+    $response = [
+      'proveedores' => $proveedor->items(),
+      'currentPage' => $proveedor->currentPage(),
+      'totalPages' => $proveedor->lastPage()
+    ];
+    return response()->json($response, 200);
+  }
 }

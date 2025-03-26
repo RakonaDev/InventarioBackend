@@ -23,7 +23,7 @@ class UserController extends Controller
     ]);
 
     if ($valitatedData->fails()) {
-      return reponse()->json(['message' => $validatedData->errors()]);
+      return response()->json(['message' => $valitatedData->errors()]);
     }
 
     if (!$token = JWTAuth::attempt($valitatedData->getData())) {
@@ -36,14 +36,14 @@ class UserController extends Controller
       $token,
       60 * 24,
       '/',
-      null,
+      "localhost",
+      true,
       true,
       false,
-      true,
       'None'
     );
     return response()->json([
-      'user' => $user,
+      'user' => $user->load('roles.ListPaginas'),
       'token' => $token,
       'message' => 'Iniciado Correctamente'
     ])->withCookie($cookie);
@@ -189,5 +189,15 @@ class UserController extends Controller
         'message' => $e->getMessage()
       ], 500);
     }
+  }
+
+  public function paginateUsers ($limit = 10, $page = 1) {
+    $users = User::with('roles')->with('estado')->paginate($limit, ['*'], 'page', $page);
+    $response = [
+      'insumos' => $users->items(),
+      'currentPage' => $users->currentPage(),
+      'totalPages' => $users->lastPage()
+    ];
+    return response()->json($response, 200);
   }
 }

@@ -108,4 +108,14 @@ class ComprasController extends Controller
     ]);
   }
     */
+  public function paginateCompras($limit = 10, $page = 1)
+  {
+    $compras = Compra::with('producto')->paginate($limit, ['*'], 'page', $page);
+    $response = [
+      'compras' => $compras->items(),
+      'currentPage' => $compras->currentPage(),
+      'totalPages' => $compras->lastPage()
+    ];
+    return response()->json($response, 200);
+  }
 }

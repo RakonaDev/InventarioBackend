@@ -23,7 +23,7 @@ class RolesController extends Controller
     $valitatedData = Validator::make($request->all(), [
       'name' => 'required|string|max:255|unique:roles',
       'paginas' => 'required|array',
-      'paginas.*' => 'exists:paginas,id'
+      'paginas.*' => 'integer|exists:paginas,id'
     ]);
 
     if ($valitatedData->fails()) {
@@ -44,7 +44,7 @@ class RolesController extends Controller
     }
     return response()->json([
       'message' => 'Rol registrado correctamente',
-      'roles' => $result
+      'roles' => $result->load('ListPaginas')
     ]);
   }
 
@@ -97,5 +97,16 @@ class RolesController extends Controller
     }
     Roles::destroy($id);
     return response()->json(['message'=> 'Usuario Eliminado','roles'=> $roles], 200);
+  }
+
+  public function paginateRoles($limit, $page)
+  {
+    $roles = Roles::paginate($limit, ['*'], 'page', $page);
+    $response = [
+      'roles' => $roles->items(),
+      'currentPage' => $roles->currentPage(),
+      'totalPages' => $roles->lastPage()
+    ];
+    return response()->json($response, 200);
   }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\TokenInvalidException;
@@ -19,64 +20,43 @@ class CheckAdmin
    */
   public function handle(Request $request, Closure $next): Response
   {
-    /*
+    Log::info('a',$request->all());
     try {
-  
-      $token = $request->cookie('jwt_token');
-      
-      $token = $request->header('Authorization'); 
-      if(!$token) {
-        return response()->json(['error' => 'Token no encontrado'], 401);
-      }
-      $token = str_replace('Bearer ', '', $token);
-      JWTAuth::setToken($token);
-      // Validar el token y autenticar al usuario
-      if (!$user = JWTAuth::authenticate()) {
-        return response()->json(['error' => 'Usuario no autorizado'], 401);
-      }
-      $request->merge(['auth_user' => $user]);
-    } catch (Exception $e) {
-      if ($e instanceof TokenInvalidException) {
-        return response()->json(['message' => 'Token inválido'], 401);
-      } elseif ($e instanceof TokenExpiredException) {
-        return response()->json(['message' => 'Token expirado'], 401);
-      } else {
-        return response()->json(['message' => 'Token no encontrado'], 401);
-      }
-    }
-
-    return $next($request);
-  }
-  */
-
-    try {
-      // Obtener el token del encabezado Authorization
-      $token = $request->header('Authorization');
+      $token = $this->getTokenFromRequest($request);
 
       if (!$token) {
         return response()->json(['error' => 'Token no encontrado'], 401);
       }
 
-      $token = str_replace('Bearer ', '', $token); // Eliminar 'Bearer ' del token
       JWTAuth::setToken($token);
 
-      // Validar el token y autenticar al usuario
       if (!$user = JWTAuth::authenticate()) {
         return response()->json(['error' => 'Usuario no autorizado'], 401);
       }
 
-      // Agregar el usuario autenticado a la solicitud
       $request->merge(['auth_user' => $user]);
+      Log::info($request);
+    } catch (TokenInvalidException $e) {
+      return response()->json(['message' => 'Token inválido'], 401);
+    } catch (TokenExpiredException $e) {
+      return response()->json(['message' => 'Token expirado'], 401);
     } catch (Exception $e) {
-      if ($e instanceof TokenInvalidException) {
-        return response()->json(['message' => 'Token inválido'], 401);
-      } elseif ($e instanceof TokenExpiredException) {
-        return response()->json(['message' => 'Token expirado'], 401);
-      } else {
-        return response()->json(['message' => 'Token no encontrado'], 401);
-      }
+      Log::error('Error JWT: ' . $e->getMessage());
+      return response()->json(['message' => 'Token no encontrado'], 401);
     }
 
     return $next($request);
+  }
+
+  private function getTokenFromRequest(Request $request): ?string
+  {
+    Log::info($request);
+    $token = $request->cookie('jwt_token');
+
+    if (!$token && $request->header('Authorization')) {
+      $token = str_replace('Bearer ', '', $request->header('Authorization'));
+    }
+
+    return $token;
   }
 }
