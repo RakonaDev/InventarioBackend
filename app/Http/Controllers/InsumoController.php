@@ -17,6 +17,16 @@ class InsumoController extends Controller
     return response()->json(Insumo::all()->load('categorias')->load('proveedor'), 200);
   }
 
+  public function paginateInsumos($limit = 10, $page = 1) {
+    $productos = Insumo::with('categorias')->with('proveedor')->paginate($limit, ['*'], 'page', $page);
+    $response = [
+      'insumos' => $productos->items(),
+      'currentPage' => $productos->currentPage(),
+      'totalPages' => $productos->lastPage()
+    ];
+    return response()->json($response, 200);
+  }
+
   public function store(Request $request)
   {
     $request->merge([
@@ -203,16 +213,6 @@ class InsumoController extends Controller
       'message' => 'Producto creado exitosamente.',
       'producto' => $result->load('imagenes'), // Retornar el producto con sus imágenes
     ], 201);
-  }
-  public function paginateInsumos($limit = 10, $page = 1)
-  {
-    $productos = Insumo::with('categorias')->with('proveedor')->paginate($limit, ['*'], 'page', $page);
-    $response = [
-      'insumos' => $productos->items(),
-      'currentPage' => $productos->currentPage(),
-      'totalPages' => $productos->lastPage()
-    ];
-    return response()->json($response, 200);
   }
 
   public function buscarInsumosPorNombrePaginado(Request $request)

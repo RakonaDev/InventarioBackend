@@ -1,0 +1,3 @@
+// Llamado al store procedure para crear una pagina
+CALL sp_crear_o_actualizar_pagina('productos', @pagina_id);
+SELECT @pagina_id;

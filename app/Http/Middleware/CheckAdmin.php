@@ -18,14 +18,15 @@ class CheckAdmin
    *
    * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
    */
-  public function handle(Request $request, Closure $next): Response
+  public function handle(Request $request, Closure $next)
   {
     Log::info('a',$request->all());
     try {
       $token = $this->getTokenFromRequest($request);
 
+      // 2. Si no se encuentra en el header, intenta obtenerlo de la cookie 'jwt_token'
       if (!$token) {
-        return response()->json(['error' => 'Token no encontrado'], 401);
+        $token = $request->cookie('jwt_token');
       }
 
       JWTAuth::setToken($token);
@@ -36,6 +37,8 @@ class CheckAdmin
 
       $request->merge(['auth_user' => $user]);
       Log::info($request);
+      return $next($request);
+      
     } catch (TokenInvalidException $e) {
       return response()->json(['message' => 'Token inválido'], 401);
     } catch (TokenExpiredException $e) {
@@ -44,8 +47,6 @@ class CheckAdmin
       Log::error('Error JWT: ' . $e->getMessage());
       return response()->json(['message' => 'Token no encontrado'], 401);
     }
-
-    return $next($request);
   }
 
   private function getTokenFromRequest(Request $request): ?string

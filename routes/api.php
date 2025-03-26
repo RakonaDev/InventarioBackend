@@ -14,6 +14,7 @@ use App\Http\Middleware\CheckAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [UserController::class, 'login']);
+Route::post('/register', [UserController::class, 'register']);
 
 Route::group(['middleware' => CheckAdmin::class], function () {
   Route::get('/getUsers', [UserController::class, 'index']);

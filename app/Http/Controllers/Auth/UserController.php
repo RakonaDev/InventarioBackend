@@ -6,14 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
-  //
 
   public function login(Request $request)
   {
@@ -36,8 +34,12 @@ class UserController extends Controller
       $token,
       60 * 24,
       '/',
+<<<<<<< HEAD
       "localhost",
       true,
+=======
+      'localhost',
+>>>>>>> be96a6a522e29574debc3e88e6f8c73f5692389e
       true,
       false,
       'None'
@@ -81,7 +83,7 @@ class UserController extends Controller
       'password' => Hash::make($request->input('password'))
     ]);
     $user->password = $request->input('password');
-
+    
     return response()->json([
       'message' => 'Usuario registrado correctamente',
       'user' => $user->load('roles')

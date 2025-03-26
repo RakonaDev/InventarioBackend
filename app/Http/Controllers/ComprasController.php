@@ -81,33 +81,7 @@ class ComprasController extends Controller
       'insumos' => $producto
     ]);
   }
-  /*
-  public function verComprobante(Request $request)
-  {
-    // Verificar si el usuario está autenticado
-    if (!auth()->check()) {
-      return response()->json(['error' => 'No autorizado'], 403);
-    }
-
-    // Desencriptar la ruta del archivo
-    try {
-      $path = Crypt::decrypt($request->query('path'));
-    } catch (\Exception $e) {
-      return response()->json(['error' => 'URL inválida'], 400);
-    }
-
-    if (!Storage::exists($path)) {
-      return response()->json(['error' => 'Archivo no encontrado'], 404);
-    }
-
-    // Mostrar el PDF en el navegador sin descargarlo
-    return response()->file(storage_path("app/{$path}"), [
-      'Content-Type' => 'application/pdf',
-      'Cache-Control' => 'no-store, no-cache, must-revalidate',
-      'Pragma' => 'no-cache',
-    ]);
-  }
-    */
+  
   public function paginateCompras($limit = 10, $page = 1)
   {
     $compras = Compra::with('producto')->paginate($limit, ['*'], 'page', $page);
