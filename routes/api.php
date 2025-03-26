@@ -24,7 +24,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   Route::post('/user', [UserController::class, 'update']);
   // Route::delete('/user/{id}', [UserController::class,'delete']);
   Route::post('/deleteUser/{id}', [UserController::class, 'delete']);
-  Route::post('/user/{limit}/{page}', [UserController::class, 'paginateUsers']);
+  Route::get('/user/{limit}/{page}', [UserController::class, 'paginateUsers']);
   Route::post('/logout', [UserController::class,'logout']);
   // Ruta de Insumos
   Route::get('/getInsumos', [InsumoController::class, 'index']); 

@@ -168,11 +168,11 @@ class UserController extends Controller
       '',
       0,
       '/',
-      null,
+      ENV("DOMAIN_COOKIE"),
       true,
       true,
       false,
-      'Lax'
+      'None'
     );
 
     try {
@@ -192,7 +192,7 @@ class UserController extends Controller
   public function paginateUsers ($limit = 10, $page = 1) {
     $users = User::with('roles')->with('estado')->paginate($limit, ['*'], 'page', $page);
     $response = [
-      'insumos' => $users->items(),
+      'users' => $users->items(),
       'currentPage' => $users->currentPage(),
       'totalPages' => $users->lastPage()
     ];
