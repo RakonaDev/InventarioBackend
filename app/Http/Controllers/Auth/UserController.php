@@ -34,7 +34,7 @@ class UserController extends Controller
       $token,
       60 * 24,
       '/',
-      "localhost",
+      ENV("DOMAIN_COOKIE"),
       true,
       true,
       false,
