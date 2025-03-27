@@ -98,6 +98,10 @@ class RolesController extends Controller
     
     $data = $valitatedData->validated();
     */
+    if ($id == 1 || $id == "1") {
+      return response()->json([ 'message' => 'El rol Administrador no se borra' ], 500);
+    }
+
     $roles = Roles::find($id);
     if ($roles) {
       $roles->ListPaginas()->detach();

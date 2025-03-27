@@ -19,7 +19,11 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+      'https://inventariodemo.logosperu.com',
+      'http://localhost:3000',
+      'https://www.demo-inventario.logosperu.com'
+    ],
 
     'allowed_origins_patterns' => [],
 

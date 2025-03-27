@@ -44,7 +44,7 @@ class ComprasController extends Controller
           }
         }
       ],
-      'comprobante' => 'nullable|file|mimes:pdf|max:5048'
+      'comprobante' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
     ]);
 
     if ($validator->fails()) {

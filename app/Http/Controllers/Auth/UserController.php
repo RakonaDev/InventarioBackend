@@ -28,12 +28,13 @@ class UserController extends Controller
       return response()->json(['message' => 'Credenciales inválidas'], 401);
     }
     // prueba@administrador.com
-    $user = Auth::user();
+    $user = Auth::user()->load(['roles', 'roles.ListPaginas']); // Cargar el rol y sus páginas permitidas
     $cookie = cookie(
       'jwt_token',
       $token,
       60 * 24,
       '/',
+      //'.logosperu.com',
       'localhost',
       true,
       false,
@@ -87,7 +88,8 @@ class UserController extends Controller
   }
 
   public function update(Request $request)
-  {
+  { 
+    
     $valitatedData = Validator::make($request->all(), [
       'id' => 'required|integer|exists:users,id',
       'names' => 'nullable|string|max:255',
@@ -106,6 +108,10 @@ class UserController extends Controller
     }
 
     $data = $valitatedData->validated();
+    if ($data['id'] == 1 || $data['id'] == "1") {
+      return response()->json([ 'message' => 'El usuario Administrador no se borra' ], 500);
+    }
+    
     $user = User::find($data['id']);
     if (!$user) {
       return response()->json(['message' => 'Usuario no encontrado'], 404);
@@ -144,7 +150,11 @@ class UserController extends Controller
     }
     $data = $valitatedData->validated();
     */
+    if ($id == 1 || $id == "1") {
+      return response()->json([ 'message' => 'El usuario Administrador no se borra' ], 500);
+    }
     $user = User::find($id);
+    
     User::destroy($id);
     return response()->json(['message' => 'Usuario Eliminado', 'user' => $user], 200);
   }
@@ -192,7 +202,7 @@ class UserController extends Controller
   public function paginateUsers ($limit = 10, $page = 1) {
     $users = User::with('roles')->with('estado')->paginate($limit, ['*'], 'page', $page);
     $response = [
-      'insumos' => $users->items(),
+      'users' => $users->items(),
       'currentPage' => $users->currentPage(),
       'totalPages' => $users->lastPage()
     ];

@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [UserController::class, 'login']);
 Route::post('/register', [UserController::class, 'register']);
 
-Route::group(['middleware' => CheckAdmin::class], function () {
+Route::group(['middleware' => CheckAdmin::class, 'throttle:40,1'], function () {
   Route::get('/getUsers', [UserController::class, 'index']);
   Route::post('/register', [UserController::class, 'register']);
   Route::get('/me', [UserController::class, 'me']);
@@ -24,7 +24,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   Route::post('/user', [UserController::class, 'update']);
   // Route::delete('/user/{id}', [UserController::class,'delete']);
   Route::post('/deleteUser/{id}', [UserController::class, 'delete']);
-  Route::post('/user/{limit}/{page}', [UserController::class, 'paginateUsers']);
+  Route::get('/user/{limit}/{page}', [UserController::class, 'paginateUsers']);
   Route::post('/logout', [UserController::class,'logout']);
   // Ruta de Insumos
   Route::get('/getInsumos', [InsumoController::class, 'index']); 
