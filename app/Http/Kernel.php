@@ -56,5 +56,13 @@ class Kernel extends HttpKernel
         'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'permisos.usuarios' =>  \App\Http\Middleware\UsuariosPermisoMiddleware::class,
+        'permisos.categorias' =>  \App\Http\Middleware\CategoriaPermisoMiddleware::class,
+        'permisos.compras' =>  \App\Http\Middleware\ComprasPermisoMiddleware::class,
+        'permisos.movimientos' =>  \App\Http\Middleware\MovimientosPermisoMiddleware::class,
+        'permisos.productos' =>  \App\Http\Middleware\ProductosPermisoMiddleware::class,
+        'permisos.proveedores' =>  \App\Http\Middleware\ProveedoresPermisoMiddleware::class,
+        'permisos.roles' =>  \App\Http\Middleware\RolesPermisoMiddleware::class,
+        'permisos.salidas' =>  \App\Http\Middleware\SalidasPermisoMiddleware::class,
     ];
 }

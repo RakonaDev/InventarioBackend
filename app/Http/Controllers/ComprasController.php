@@ -82,7 +82,8 @@ class ComprasController extends Controller
     ]);
   }
   
-  public function paginateCompras ($limit = 10, $page = 1) {
+  public function paginateCompras($limit = 10, $page = 1)
+  {
     $compras = Compra::with('producto')->paginate($limit, ['*'], 'page', $page);
     $response = [
       'compras' => $compras->items(),

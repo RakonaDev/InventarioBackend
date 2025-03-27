@@ -28,7 +28,7 @@ class RolesController extends Controller
     $valitatedData = Validator::make($request->all(), [
       'name' => 'required|string|max:255|unique:roles',
       'paginas' => 'required|array',
-      'paginas.*' => 'exists:paginas,id'
+      'paginas.*' => 'integer|exists:paginas,id'
     ]);
     
     if ($valitatedData->fails()) {
@@ -116,15 +116,7 @@ class RolesController extends Controller
   {
     $roles = Roles::paginate($limit, ['*'], 'page', $page);
     $response = [
-      'roles' => collect($roles->items())->map(function ($role) {
-        return [
-          'id' => $role->id,
-          'name' => $role->name,
-          'created_at' => $role->created_at,
-          'updated_at' => $role->updated_at,
-          'list_paginas' => $role->ListPaginas,
-        ];
-      }),
+      'roles' => $roles->items(),
       'currentPage' => $roles->currentPage(),
       'totalPages' => $roles->lastPage()
     ];

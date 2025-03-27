@@ -18,57 +18,46 @@ class CheckAdmin
    *
    * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
    */
-  public function handle(Request $request, Closure $next): Response
+  public function handle(Request $request, Closure $next)
   {
-    $token = null;
-
+    Log::info('a',$request->all());
     try {
-      // 1. Intenta obtener el token del header Authorization
-      $authorizationHeader = $request->header('Authorization');
-      if ($authorizationHeader) {
-        $parts = explode(' ', trim($authorizationHeader), 2);
-        if (count($parts) === 2) {
-          // Si hay un esquema (ej: "Bearer <token>", "Custom <token>")
-          $token = trim($parts[1]);
-        } else {
-          // Si no hay esquema, usa el header completo como token
-          $token = trim($authorizationHeader);
-        }
-      }
+      $token = $this->getTokenFromRequest($request);
 
       // 2. Si no se encuentra en el header, intenta obtenerlo de la cookie 'jwt_token'
       if (!$token) {
         $token = $request->cookie('jwt_token');
       }
 
-      // 3. Autentica si se encontró un token
-      if ($token) {
-        try {
-          JWTAuth::setToken($token);
-          if ($user = JWTAuth::authenticate()) {
-            $request->merge(['auth_user' => $user]);
-          }
-          // Si authenticate() falla (token inválido o usuario no encontrado),
-          // $user será false, y la solicitud continuará sin autenticación.
-        } catch (TokenInvalidException $e) {
-          Log::warning('Middleware: Token inválido', ['token' => $token, 'exception' => $e->getMessage()]);
-          // Token inválido, la solicitud continúa sin autenticación
-        } catch (TokenExpiredException $e) {
-          Log::warning('Middleware: Token expirado', ['token' => $token, 'exception' => $e->getMessage()]);
-          // Token expirado, la solicitud continúa sin autenticación
-        } catch (Exception $e) {
-          Log::error('Middleware: Error al autenticar token', ['token' => $token, 'exception' => $e->getMessage()]);
-          // Otro error al autenticar, la solicitud continúa sin autenticación
-        }
+      JWTAuth::setToken($token);
+
+      if (!$user = JWTAuth::authenticate()) {
+        return response()->json(['error' => 'Usuario no autorizado'], 401);
       }
 
-      // 4. La solicitud siempre continúa, con o sin usuario autenticado
+      $request->merge(['auth_user' => $user]);
+      Log::info($request);
       return $next($request);
-    } catch (\Throwable $fatalError) {
-      // Captura errores fatales que puedan ocurrir en el middleware
-      Log::critical('Middleware: Error fatal', ['exception' => $fatalError->getMessage(), 'trace' => $fatalError->getTraceAsString()]);
-      // En un error fatal, podrías optar por abortar la solicitud con un error 500
-      return response()->json(['error' => 'Error interno del servidor'], 500);
+      
+    } catch (TokenInvalidException $e) {
+      return response()->json(['message' => 'Token inválido'], 401);
+    } catch (TokenExpiredException $e) {
+      return response()->json(['message' => 'Token expirado'], 401);
+    } catch (Exception $e) {
+      Log::error('Error JWT: ' . $e->getMessage());
+      return response()->json(['message' => 'Token no encontrado'], 401);
     }
+  }
+
+  private function getTokenFromRequest(Request $request): ?string
+  {
+    Log::info($request);
+    $token = $request->cookie('jwt_token');
+
+    if (!$token && $request->header('Authorization')) {
+      $token = str_replace('Bearer ', '', $request->header('Authorization'));
+    }
+
+    return $token;
   }
 }

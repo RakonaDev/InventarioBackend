@@ -34,15 +34,14 @@ class UserController extends Controller
       $token,
       60 * 24,
       '/',
-      //'.logosperu.com',
-      'localhost',
+      ENV("DOMAIN_COOKIE"),
+      true,
       true,
       false,
-      true,
       'None'
     );
     return response()->json([
-      'user' => $user,
+      'user' => $user->load('roles.ListPaginas'),
       'token' => $token,
       'message' => 'Iniciado Correctamente'
     ])->withCookie($cookie);
@@ -178,11 +177,11 @@ class UserController extends Controller
       '',
       0,
       '/',
-      null,
+      ENV("DOMAIN_COOKIE"),
       true,
       true,
       false,
-      'Lax'
+      'None'
     );
 
     try {
