@@ -46,6 +46,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
     Route::post('/insumos/{id}', [InsumoController::class, 'update']);
     Route::get('/insumos/{limit}/{page}', [InsumoController::class, 'paginateInsumos']);
     Route::post('/deleteInsumos/{id}', [InsumoController::class, 'destroy']);
+    Route::get('/insumos/{limit}/{page}/{nombre}', [InsumoController::class, 'buscarInsumosPorNombrePaginado']);
   });
 
   Route::group(['middleware' => ComprasPermisoMiddleware::class], function () {
@@ -58,7 +59,7 @@ Route::group(['middleware' => CheckAdmin::class], function () {
     //Route::delete('/roles/{id}', [RolesController::class, 'delete']);
     Route::post('/deleteRoles/{id}', [RolesController::class, 'delete']);
     // Route::patch('/roles', [RolesController::class,'updateData']);
-    Route::post('/roles', [RolesController::class, 'updateData']);
+    Route::post('/roles/{id}', [RolesController::class, 'updateData']);
     Route::get('/roles/{limit}/{page}', [RolesController::class, 'paginateRoles']);
   });
 

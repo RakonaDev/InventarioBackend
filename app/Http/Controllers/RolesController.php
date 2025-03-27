@@ -26,7 +26,7 @@ class RolesController extends Controller
   { 
     
     $valitatedData = Validator::make($request->all(), [
-      'name' => 'required|string|max:255|unique:roles',
+      'nombres' => 'required|string|max:255|unique:roles',
       'paginas' => 'required|array',
       'paginas.*' => 'integer|exists:paginas,id'
     ]);
@@ -36,7 +36,7 @@ class RolesController extends Controller
     }
 
     $result = Roles::create([
-      'name' => $request->input('name')
+      'name' => $request->input('nombres')
     ]);
 
     if ($request->has('paginas')) {
@@ -59,25 +59,24 @@ class RolesController extends Controller
   public function updateData(Request $request, $id)
   {
     $valitatedData = Validator::make($request->all(), [
-      'name' => 'required|string|max:255',
-      'id' => 'required|integer|exists:roles,id',
+      'nombres' => 'required|string|max:255',
       'paginas' => 'required|array',
       'paginas.*' => 'exists:paginas,id'
     ]);
 
     if ($valitatedData->fails()) {
-      return response()->json(['error' => $valitatedData->errors()], 400);
+      return response()->json($valitatedData->errors(), 400);
     }
 
     $roledata = $valitatedData->validated();
-    $rol = Roles::find($roledata['id']);
+    $rol = Roles::find($id);
     if (!$rol) {
       return response()->json([
         'error' => 'No se encontro el rol',
       ], 404);
     }
     $rol->ListPaginas()->sync($request->input('paginas'));
-    $rol->name = $roledata['name'];
+    $rol->name = $roledata['nombres'];
     $rol->save();
 
     return response()->json([
@@ -114,7 +113,7 @@ class RolesController extends Controller
 
   public function paginateRoles($limit, $page)
   {
-    $roles = Roles::paginate($limit, ['*'], 'page', $page);
+    $roles = Roles::with('ListPaginas')->paginate($limit, ['*'], 'page', $page);
     $response = [
       'roles' => $roles->items(),
       'currentPage' => $roles->currentPage(),

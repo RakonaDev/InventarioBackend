@@ -6,6 +6,7 @@ use App\Models\Compra;
 use App\Models\ImagenInsumos;
 use App\Models\Insumo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +18,8 @@ class InsumoController extends Controller
     return response()->json(Insumo::all()->load('categorias')->load('proveedor'), 200);
   }
 
-  public function paginateInsumos($limit = 10, $page = 1) {
+  public function paginateInsumos($limit = 10, $page = 1)
+  {
     $productos = Insumo::with('categorias')->with('proveedor')->paginate($limit, ['*'], 'page', $page);
     $response = [
       'insumos' => $productos->items(),
@@ -215,16 +217,22 @@ class InsumoController extends Controller
     ], 201);
   }
 
-  public function buscarInsumosPorNombrePaginado(Request $request)
+  public function buscarInsumosPorNombrePaginado($limit, $page, $nombre)
   {
-    $query = $request->input('query');
-    $limit = $request->input('limit', 10); // Obtén el límite de la petición o usa 10 por defecto
-    $page = $request->input('page', 1);   // Obtén la página de la petición o usa 1 por defecto
-
-    $productos = Insumo::with('categorias')
-      ->with('proveedor')
-      ->where('nombre', 'like', '%' . $query . '%') // Asumo que la columna del nombre es 'nombre'
-      ->paginate($limit, ['*'], 'page', $page);
+    $productos = [];
+    Log::info($nombre);
+    if ($nombre === "todos") {
+      $productos = Insumo::with('categorias')
+        ->with('proveedor')
+        ->paginate($limit, ['*'], 'page', $page);
+      Log::info("PRODUCTOS: ". $productos);
+    } else {
+      $productos = Insumo::with('categorias')
+        ->with('proveedor')
+        ->where('nombre', 'like', '%' . $nombre . '%') // Asumo que la columna del nombre es 'nombre'
+        ->paginate($limit, ['*'], 'page', $page);
+      Log::info("PRODUCTOS BUSCADOS: ". $productos);
+    }
 
     $response = [
       'insumos' => $productos->items(),

@@ -19,18 +19,24 @@ class ProveedorController extends Controller
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
-      'name' => 'required|string|max:255',
-      'phone' => 'required|string|max:20',
+      'nombre' => 'required|string|max:255',
+      'celular' => 'required|string|max:10|min:9',
       'email' => 'required|email|unique:proveedores,email',
-      'ruc' => 'required|string|max:255',
-      'address' => 'required|string|max:255',
+      'ruc' => 'required|string|max:20',
+      'direccion' => 'required|string|max:255',
     ]);
 
     if ($validator->fails()) {
-      return response()->json(['errors' => $validator->errors()], 422);
+      return response()->json($validator->errors(), 422);
     }
-
-    $proveedor = Proveedor::create($validator->validated());
+    $data = $validator->validated();
+    $proveedor = Proveedor::create([
+      'name' => $data['nombre'],
+      'email' => $data['email'],
+      'ruc' => $data['ruc'],
+      'address' => $data['direccion'],
+      'phone' => $data['celular']
+    ]);
 
     return response()->json(['message' => 'Proveedor creado con éxito', 'proveedores' => $proveedor], 201);
   }
@@ -51,15 +57,15 @@ class ProveedorController extends Controller
   public function update(Request $request, $id)
   {
     $validator = Validator::make($request->all(), [
-      'name' => 'required|string|max:255',
-      'phone' => 'required|string|max:20',
-      'email' => 'required|email|unique:proveedores,email,' . $id,
-      'ruc' => 'required|string|max:255',
-      'address' => 'required|string|max:255',
+      'nombre' => 'required|string|max:255',
+      'celular' => 'required|string|max:10|min:9',
+      'email' => 'required|email|exists:proveedores,email',
+      'ruc' => 'required|string|max:20',
+      'direccion' => 'required|string|max:255',
     ]);
 
     if ($validator->fails()) {
-      return response()->json(['errors' => $validator->errors()], 422);
+      return response()->json($validator->errors(), 422);
     }
 
     $proveedor = Proveedor::find($id);
@@ -67,8 +73,14 @@ class ProveedorController extends Controller
     if (!$proveedor) {
       return response()->json(['message' => 'Proveedor no encontrado'], 404);
     }
-
-    $proveedor->update($validator->validated());
+    $data = $validator->validated();
+    $proveedor->update([
+      'name' => $data['nombre'],
+      'email' => $data['email'],
+      'ruc' => $data['ruc'],
+      'address' => $data['direccion'],
+      'phone' => $data['celular']
+    ]);
 
     return response()->json(['message' => 'Proveedor actualizado con éxito', 'proveedores' => $proveedor]);
   }

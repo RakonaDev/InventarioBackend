@@ -20,7 +20,7 @@ class CheckAdmin
    */
   public function handle(Request $request, Closure $next)
   {
-    Log::info('a',$request->all());
+
     try {
       $token = $this->getTokenFromRequest($request);
 
@@ -36,7 +36,7 @@ class CheckAdmin
       }
 
       $request->merge(['auth_user' => $user]);
-      Log::info($request);
+      
       return $next($request);
       
     } catch (TokenInvalidException $e) {
@@ -51,7 +51,7 @@ class CheckAdmin
 
   private function getTokenFromRequest(Request $request): ?string
   {
-    Log::info($request);
+  
     $token = $request->cookie('jwt_token');
 
     if (!$token && $request->header('Authorization')) {

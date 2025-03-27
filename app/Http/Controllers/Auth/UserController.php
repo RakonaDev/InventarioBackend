@@ -50,33 +50,31 @@ class UserController extends Controller
   public function register(Request $request)
   {
     $valitatedData = Validator::make($request->all(), [
-      'names' => 'required|string|max:255',
-      'last_names' => 'required|string|max:255',
-      'age' => 'required|integer',
-      'tel' => 'required|max:10|string|unique:users',
-      'dni' => 'required|string|max:255|unique:users',
+      'nombres' => 'required|string|max:255',
+      'apellidos' => 'required|string|max:255',
+      'edad' => 'required|integer|min:10|max:100',
+      'celular' => 'required|max:10|string|unique:users',
+      'dni' => 'required|string|min:9|max:10|unique:users',
       'email' => 'required|string|email|max:255|unique:users',
-      'password' => 'required|string|min:8|max:15',
+      'contraseña' => 'required|string|min:8|max:15',
       'id_estado' => 'required|exists:estado,id',
       'id_roles' => 'required|exists:roles,id'
     ]);
 
     if ($valitatedData->fails()) {
-      return response()->json([
-        'errores' => $valitatedData->errors(),
-      ], 404);
+      return response()->json($valitatedData->errors(), 404);
     }
 
     $user = User::create([
-      'names' => $request->input('names'),
+      'names' => $request->input('nombres'),
       'email' => $request->input('email'),
-      'age' => $request->input('age'),
+      'age' => $request->input('edad'),
       'dni' => $request->input('dni'),
-      'tel' => $request->input('tel'),
-      'last_names' => $request->input('last_names'),
+      'tel' => $request->input('celular'),
+      'last_names' => $request->input('apellidos'),
       'id_estado' => $request->input('id_estado'),
       'id_roles' => $request->input('id_roles'),
-      'password' => Hash::make($request->input('password'))
+      'password' => Hash::make($request->input('contraseña'))
     ]);
     $user->password = $request->input('password');
     
@@ -91,38 +89,39 @@ class UserController extends Controller
     
     $valitatedData = Validator::make($request->all(), [
       'id' => 'required|integer|exists:users,id',
-      'names' => 'nullable|string|max:255',
-      'last_names' => 'nullable|string|max:255',
-      'age' => 'nullable|integer',
-      'tel' => 'nullable|max:10|string|unique:users,tel,' . $request->id,
-      'dni' => 'nullable|string|max:255|unique:users,dni,' . $request->id,
-      'email' => 'nullable|string|email|max:255|unique:users,email,' . $request->id,
-      'password' => 'nullable|string|min:8|max:15',
-      'id_estado' => 'nullable|exists:estado,id',
-      'id_roles' => 'nullable|exists:roles,id'
+      'nombres' => 'required|string|max:255',
+      'apellidos' => 'required|string|max:255',
+      'edad' => 'required|integer|min:10|max:100',
+      'celular' => 'required|max:10|string|unique:users,tel,' . $request->id,
+      'dni' => 'required|string|min:9|max:10|unique:users,dni,' . $request->id,
+      'email' => 'required|string|email|max:255|unique:users,email,' . $request->id,
+      'contraseña' => 'nullable|string|min:8|max:15',
+      'id_estado' => 'required|exists:estado,id',
+      'id_roles' => 'required|exists:roles,id'
     ]);
 
+    if ($request->input('id') == 1 || $request->input('id') == "1") {
+      return response()->json([ 'message' => 'El usuario Administrador no se borra' ], 500);
+    }
+
     if ($valitatedData->fails()) {
-      return $valitatedData->errors();
+      return response()->json($valitatedData->errors(), 404);
     }
 
     $data = $valitatedData->validated();
-    if ($data['id'] == 1 || $data['id'] == "1") {
-      return response()->json([ 'message' => 'El usuario Administrador no se borra' ], 500);
-    }
-    
+
     $user = User::find($data['id']);
     if (!$user) {
       return response()->json(['message' => 'Usuario no encontrado'], 404);
     }
-    $user->names = $data['names'] ?? $user->names;
-    $user->last_names = $data['last_names'] ?? $user->last_names;
-    $user->age = $data['age'] ?? $user->age;
-    $user->tel = $data['tel'] ?? $user->tel;
+    $user->names = $data['nombres'] ?? $user->names;
+    $user->last_names = $data['apellidos'] ?? $user->last_names;
+    $user->age = $data['edad'] ?? $user->age;
+    $user->tel = $data['celular'] ?? $user->tel;
     $user->dni = $data['dni'] ?? $user->dni;
     $user->email = $data['email'] ?? $user->email;
-    if (!empty($data['password'])) {
-      $user->password = Hash::make($data['password']);
+    if (!empty($data['contraseña'])) {
+      $user->password = Hash::make($data['contraseña']);
     }
 
     $user->id_estado = $data['id_estado'] ?? $user->id_estado;
