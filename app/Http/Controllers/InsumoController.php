@@ -38,7 +38,7 @@ class InsumoController extends Controller
     $validator = Validator::make($request->all(), [
       'nombre' => 'required|string|max:255',
       'descripcion' => 'required|string',
-      'precio' => 'required|numeric|min:1',
+      'precio' => 'required|numeric|min:0',
       'cantidad' => 'required|integer|min:1',
       'id_categoria' => 'required|exists:categorias,id',
       'id_proveedor' => 'required|exists:proveedores,id',

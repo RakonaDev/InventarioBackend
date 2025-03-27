@@ -81,10 +81,22 @@ class ComprasController extends Controller
       'insumos' => $producto
     ]);
   }
-  
+
   public function paginateCompras($limit = 10, $page = 1)
   {
+    /*
     $compras = Compra::with('producto')->paginate($limit, ['*'], 'page', $page);
+    $response = [
+      'compras' => $compras->items(),
+      'currentPage' => $compras->currentPage(),
+      'totalPages' => $compras->lastPage()
+    ];
+    return response()->json($response, 200);
+    */
+    $compras = Compra::with('producto')
+      ->orderBy('created_at', 'desc') // Ordena por la columna 'created_at' en orden descendente (último primero)
+      ->paginate($limit, ['*'], 'page', $page);
+
     $response = [
       'compras' => $compras->items(),
       'currentPage' => $compras->currentPage(),

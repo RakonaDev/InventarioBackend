@@ -43,7 +43,9 @@ class SalidasController extends Controller
   }
   public function paginateSalidas($limit = 10, $page = 1)
   {
-    $salidas = Salida::with('producto')->paginate($limit, ['*'], 'page', $page);
+    $salidas = Salida::with('producto')
+      ->orderBy('created_at', 'desc')
+      ->paginate($limit, ['*'], 'page', $page);
     $response = [
       'salidas' => $salidas->items(),
       'currentPage' => $salidas->currentPage(),
