@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Compra;
 use App\Models\Insumo;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -44,7 +45,7 @@ class ComprasController extends Controller
           }
         }
       ],
-      'comprobante' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+      'comprobante' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,avif,docx,doc',
     ]);
 
     if ($validator->fails()) {
@@ -82,17 +83,11 @@ class ComprasController extends Controller
     ]);
   }
 
-  public function paginateCompras($limit = 10, $page = 1)
+  public function paginateCompras($limit = 10, $page = 1, $nombre, $orden, $fecha)
   {
+    $nombreProducto = $nombre;
+    $ordenM = strtolower($orden === 'desc' || $orden === 'asc' ? $orden : 'desc');
     /*
-    $compras = Compra::with('producto')->paginate($limit, ['*'], 'page', $page);
-    $response = [
-      'compras' => $compras->items(),
-      'currentPage' => $compras->currentPage(),
-      'totalPages' => $compras->lastPage()
-    ];
-    return response()->json($response, 200);
-    */
     $compras = Compra::with('producto')
       ->orderBy('created_at', 'desc') // Ordena por la columna 'created_at' en orden descendente (último primero)
       ->paginate($limit, ['*'], 'page', $page);
@@ -102,6 +97,36 @@ class ComprasController extends Controller
       'currentPage' => $compras->currentPage(),
       'totalPages' => $compras->lastPage()
     ];
+    return response()->json($response, 200);
+    */
+    $query = Compra::with('producto');
+
+    // Filtrado por nombre de producto
+    if ($nombreProducto !== 'todos') {
+      $query->whereHas('producto', function ($q) use ($nombreProducto) {
+        $q->where('nombre', 'like', '%' . $nombreProducto . '%');
+      })->orderBy('created_at', '' . $ordenM);
+    }
+
+    if ($fecha !== 'todos') {
+      try {
+        $date = Carbon::parse($fecha)->toDateString();
+        $query->whereDate('created_at', $date);
+      } catch (\Exception $e) {
+        // Log or handle the error if the date format is invalid
+        // For now, we'll just ignore invalid dates
+      }
+    }
+
+    $compras = $query->paginate($limit, ['*'], 'page', $page);
+
+    $response = [
+      'compras' => $compras->items(),
+      'currentPage' => $compras->currentPage(),
+      'totalPages' => $compras->lastPage(),
+      'total' => $compras->total(),
+    ];
+
     return response()->json($response, 200);
   }
 }

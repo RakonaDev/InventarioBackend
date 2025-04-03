@@ -22,7 +22,10 @@ return [
     'allowed_origins' => [
       'https://inventariodemo.logosperu.com',
       'http://localhost:3000',
-      'https://www.demo-inventario.logosperu.com'
+      'http://localhost:3001',
+      'https://www.demo-inventario.logosperu.com',
+      // 'https://dvp2jkf6-3000.brs.devtunnels.ms',
+      'https://3q133r16-3001.brs.devtunnels.ms'
     ],
 
     'allowed_origins_patterns' => [],

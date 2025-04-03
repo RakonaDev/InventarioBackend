@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Insumo;
 use App\Models\Salida;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -41,8 +42,40 @@ class SalidasController extends Controller
       'insumos' => $producto
     ]);
   }
-  public function paginateSalidas($limit = 10, $page = 1)
+  public function paginateSalidas($limit = 10, $page = 1, $nombre, $orden, $fecha)
   {
+    $nombreProducto = $nombre;
+    $ordenM = strtolower($orden === 'desc' || $orden === 'asc' ? $orden : 'desc');
+
+    $query = Salida::with('producto');
+
+    if ($nombreProducto !== 'todos') {
+      $query->whereHas('producto', function ($q) use ($nombreProducto) {
+        $q->where('nombre', 'like', '%' . $nombreProducto . '%');
+      })->orderBy('created_at', '' . $ordenM);
+    }
+
+    if ($fecha !== 'todos') {
+      try {
+        $date = Carbon::parse($fecha)->toDateString();
+        $query->whereDate('created_at', $date);
+      } catch (\Exception $e) {
+        // Log or handle the error if the date format is invalid
+        // For now, we'll just ignore invalid dates
+        return response()->json([
+          'message' => 'Fecha inválida'
+        ]);
+      }
+    }
+    $salidas = $query->paginate($limit, ['*'], 'page', $page);
+
+    $response = [
+      'salidas' => $salidas->items(),
+      'currentPage' => $salidas->currentPage(),
+      'totalPages' => $salidas->lastPage()
+    ];
+    return response()->json($response, 200);
+    /*
     $salidas = Salida::with('producto')
       ->orderBy('created_at', 'desc')
       ->paginate($limit, ['*'], 'page', $page);
@@ -52,5 +85,6 @@ class SalidasController extends Controller
       'totalPages' => $salidas->lastPage()
     ];
     return response()->json($response, 200);
+    */
   }
 }

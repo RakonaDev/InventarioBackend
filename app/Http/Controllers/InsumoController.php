@@ -61,7 +61,7 @@ class InsumoController extends Controller
           }
         }
       ],
-      'comprobante' => 'nullable|file|mimes:pdf|max:5048'
+      'comprobante' => 'nullable|file|mimes:pdf,jpg,jpeg,png,webp,avif,docx,doc',
     ]);
 
     if ($validator->fails()) {
@@ -217,28 +217,44 @@ class InsumoController extends Controller
     ], 201);
   }
 
-  public function buscarInsumosPorNombrePaginado($limit, $page, $nombre)
+  public function buscarInsumosPorNombrePaginado($limit, $page, $nombre, $proveedor, $categoria, $orden)
   {
     $productos = [];
-    Log::info($nombre);
-    if ($nombre === "todos") {
-      $productos = Insumo::with('categorias')
-        ->with('proveedor')
-        ->paginate($limit, ['*'], 'page', $page);
-      Log::info("PRODUCTOS: ". $productos);
-    } else {
-      $productos = Insumo::with('categorias')
-        ->with('proveedor')
-        ->where('nombre', 'like', '%' . $nombre . '%') // Asumo que la columna del nombre es 'nombre'
-        ->paginate($limit, ['*'], 'page', $page);
-      Log::info("PRODUCTOS BUSCADOS: ". $productos);
+    $query = Insumo::with(['categorias', 'proveedor']);
+
+    // Filtrado por nombre
+    if ($nombre !== 'todos') {
+      $query->where('nombre', 'like', '%' . $nombre . '%');
     }
+
+    // Filtrado por proveedor (asumiendo relación 'proveedor' y columna 'nombre' en la tabla proveedores)
+    if ($proveedor !== 'todos') {
+      $query->whereHas('proveedor', function ($q) use ($proveedor) {
+        $q->where('name', 'like', '%' . $proveedor . '%');
+      });
+    }
+
+    // Filtrado por categoría (asumiendo relación 'categorias' y columna 'nombre' en la tabla categorias)
+    if ($categoria !== 'todos') {
+      $query->whereHas('categorias', function ($q) use ($categoria) {
+        $q->where('nombre', 'like', '%' . $categoria . '%');
+      });
+    }
+
+    // Ordenamiento
+    if ($orden === 'asc') {
+      $query->orderBy('nombre', 'asc');
+    } elseif ($orden === 'desc') {
+      $query->orderBy('nombre', 'desc');
+    }
+
+    $productos = $query->paginate($limit, ['*'], 'page', $page);
 
     $response = [
       'insumos' => $productos->items(),
       'currentPage' => $productos->currentPage(),
       'totalPages' => $productos->lastPage(),
-      'total' => $productos->total(), // Agrega el total de elementos si lo necesitas
+      'total' => $productos->total(),
     ];
 
     return response()->json($response, 200);

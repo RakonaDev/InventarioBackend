@@ -46,11 +46,11 @@ Route::group(['middleware' => CheckAdmin::class], function () {
     Route::post('/insumos/{id}', [InsumoController::class, 'update']);
     Route::get('/insumos/{limit}/{page}', [InsumoController::class, 'paginateInsumos']);
     Route::post('/deleteInsumos/{id}', [InsumoController::class, 'destroy']);
-    Route::get('/insumos/{limit}/{page}/{nombre}', [InsumoController::class, 'buscarInsumosPorNombrePaginado']);
+    Route::get('/insumos/{limit}/{page}/{nombre}/{proveedor}/{categoria}/{orden}', [InsumoController::class, 'buscarInsumosPorNombrePaginado']);
   });
 
   Route::group(['middleware' => ComprasPermisoMiddleware::class], function () {
-    Route::get('/compras/{limit}/{page}', [ComprasController::class, 'paginateCompras']);
+    Route::get('/compras/{limit}/{page}/{nombre}/{orden}/{fecha}', [ComprasController::class, 'paginateCompras']);
     Route::post('/compras', [ComprasController::class, 'store']);
   });
 
@@ -71,15 +71,15 @@ Route::group(['middleware' => CheckAdmin::class], function () {
   });
 
   Route::group(['middleware' => SalidasPermisoMiddleware::class], function () {
-    Route::get('/salidas/{limit}/{page}', [SalidasController::class, 'paginateSalidas']);
+    Route::get('/salidas/{limit}/{page}/{nombre}/{orden}/{fecha}', [SalidasController::class, 'paginateSalidas']);
     Route::post('/salidas', [SalidasController::class, 'store']);
   });
 
   Route::group(['middleware' => MovimientosPermisoMiddleware::class], function () {
-    Route::get('/salidasMov/{limit}/{page}', [SalidasController::class, 'paginateSalidas']);
+    Route::get('/salidasMov/{limit}/{page}/{nombre}/{orden}/{fecha}', [SalidasController::class, 'paginateSalidas']);
     Route::post('/salidasMov', [SalidasController::class, 'store']);
 
-    Route::get('/comprasMov/{limit}/{page}', [ComprasController::class, 'paginateCompras']);
+    Route::get('/comprasMov/{limit}/{page}/{nombre}/{orden}/{fecha}', [ComprasController::class, 'paginateCompras']);
     Route::post('/comprasMov', [ComprasController::class, 'store']);
   });
 
